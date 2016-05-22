@@ -15,7 +15,7 @@ There are four types of gradients that can be generated:
 
 1. **Square Gradient**
    
-   Code:
+   **Code:**
     
         using PixelsForGlory.GradientGenerator;
         ...
@@ -23,13 +23,13 @@ There are four types of gradients that can be generated:
         var gradient = new SquareGradient(256, 256);
         float[,] results = gradient.Generate();
       
-   Result:
+   **Result:**
       
       ![Square Gradient](../../../Screenshots/blob/master/\GradientGenerator/SquareGradient.png?raw=true "Square Gradient")
 
 2. **Ramp Gradient**
 
-   Code:
+   **Code:**
     
         using PixelsForGlory.GradientGenerator;
         ...
@@ -45,9 +45,9 @@ There are four types of gradients that can be generated:
    * extendToEdge: Instead of generating a circluar radient, this option extends to gradient all the way to the edge of the area.
    * divisions: The spiral and be divided into different divisions to create more interesting gradients.  There must be more than 2 divisions in the list and the points must be in ascending order (from 0 to 2 * PI).  The example below shows proper use.
 
-   a. Spiral Gradient With No Divisions
+   a. **Spiral Gradient With No Divisions**
   
-   Code:
+   **Code:**
        
         using PixelsForGlory.GradientGenerator;
         ...
@@ -55,13 +55,13 @@ There are four types of gradients that can be generated:
         var gradient = new SpiralGradient(0, 0, 128, 128, false);
         float[,] results = gradient.Generate();
 
-   Result:
+   **Result:**
       
       ![Spiral Gradient](../../../Screenshots/blob/master/\GradientGenerator/SpiralGradientNoDivision.png?raw=true "Spiral Gradient")
       
-   b. Spiral Gradient With Divisions
+   b. **Spiral Gradient With Divisions**
    
-   Code:
+   **Code:**
        
         using PixelsForGlory.GradientGenerator;
         ...
@@ -81,7 +81,7 @@ There are four types of gradients that can be generated:
            });
         float[,] results = gradient.Generate();
 
-   Result:
+   **Result:**
       
       ![Spiral Gradient](../../../Screenshots/blob/master/\GradientGenerator/SpiralGradientDivision.png?raw=true "Spiral Gradient")
       
@@ -89,11 +89,11 @@ There are four types of gradients that can be generated:
    
    There are a couple of options for creating a spiral gradient.  
    * extendToEdge: Instead of generating a circluar radient, this option extends to gradient all the way to the edge of the area.
-   * divisions: The spiral and be divided into different divisions to create more interesting gradients.  There must be more than 2 divisions in the list and the points must be in ascending order (from 0 to 2 * PI).  The example below shows proper use.
+   * divisions: The spiral and be divided into different divisions to create more interesting gradients.  There must be more than 2 divisions in the list and the points must be in ascending order (from 0 to radiusX/Y).  The example below shows proper use.
 
-   a. Radial Gradient With No Divisions
+   a. **Radial Gradient With No Divisions**
   
-   Code:
+   **Code:**
        
         using PixelsForGlory.GradientGenerator;
         ...
@@ -101,13 +101,13 @@ There are four types of gradients that can be generated:
         var gradient = new RadialGradient(0, 0, 128, 128, false);
         float[,] results = gradient.Generate();
 
-   Result:
+   **Result:**
       
       ![Radial Gradient](../../../Screenshots/blob/master/\GradientGenerator/RadialGradientNoDivision.png?raw=true "Radial Gradient")
       
    b. Radial Gradient With Divisions
    
-   Code:
+   **Code:**
        
         using PixelsForGlory.GradientGenerator;
         ...
@@ -122,7 +122,6 @@ There are four types of gradients that can be generated:
           });
         float[,] results = gradient.Generate();
 
-   Result:
+   **Result:**
       
       ![Radial Gradient](../../../Screenshots/blob/master/\GradientGenerator/RadialGradientDivision.png?raw=true "Radial Gradient")
-   
