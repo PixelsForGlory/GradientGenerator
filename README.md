@@ -17,11 +17,11 @@ There are four types of gradients that can be generated:
    
    Code:
     
-       using PixelsForGlory.GradientGenerator;
-       ...
+        using PixelsForGlory.GradientGenerator;
+        ...
        
-       var gradient = new SquareGradient(256, 256);
-       float[,] results = gradient.Generate();
+        var gradient = new SquareGradient(256, 256);
+        float[,] results = gradient.Generate();
       
    Result:
       
@@ -31,11 +31,11 @@ There are four types of gradients that can be generated:
 
    Code:
     
-       using PixelsForGlory.GradientGenerator;
-       ...
+        using PixelsForGlory.GradientGenerator;
+        ...
        
-       var gradient = new RampGradient(256, 256);
-       float[,] results = gradient.Generate();
+        var gradient = new RampGradient(256, 256);
+        float[,] results = gradient.Generate();
        
        ![Ramp Gradient](../../../Screenshots/blob/master/\GradientGenerator/RampGradient.png?raw=true "Ramp Gradient")
 
