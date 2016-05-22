@@ -49,11 +49,11 @@ There are four types of gradients that can be generated:
   
    Code:
        
-       using PixelsForGlory.GradientGenerator;
-       ...
+        using PixelsForGlory.GradientGenerator;
+        ...
    
-       var gradient = new SpiralGradient(0, 0, 128, 128, false);
-       float[,] results = gradient.Generate();
+        var gradient = new SpiralGradient(0, 0, 128, 128, false);
+        float[,] results = gradient.Generate();
 
    Result:
       
@@ -63,23 +63,23 @@ There are four types of gradients that can be generated:
    
    Code:
        
-       using PixelsForGlory.GradientGenerator;
-       ...
+        using PixelsForGlory.GradientGenerator;
+        ...
    
-       var gradient = new SpiralGradient(0, 0, 128, 128, true,
-          new List<SpiralGradient.SpiralGradientDivision>()
-          {
-             new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 0f },
-             new SpiralGradient.SpiralGradientDivision { Value = 1f, Point =     (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 2 * (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 1f, Point = 3 * (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 4 * (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 1f, Point = 5 * (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 6 * (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 1f, Point = 7 * (2f * Mathf.PI) / 8 },
-             new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 8 * (2f * Mathf.PI) / 8 }
-          });
-       float[,] results = gradient.Generate();
+        var gradient = new SpiralGradient(0, 0, 128, 128, true,
+           new List<SpiralGradient.SpiralGradientDivision>()
+           {
+              new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 0f },
+              new SpiralGradient.SpiralGradientDivision { Value = 1f, Point =     (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 2 * (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 1f, Point = 3 * (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 4 * (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 1f, Point = 5 * (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 6 * (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 1f, Point = 7 * (2f * Mathf.PI) / 8 },
+              new SpiralGradient.SpiralGradientDivision { Value = 0f, Point = 8 * (2f * Mathf.PI) / 8 }
+           });
+        float[,] results = gradient.Generate();
 
    Result:
       
@@ -95,11 +95,11 @@ There are four types of gradients that can be generated:
   
    Code:
        
-       using PixelsForGlory.GradientGenerator;
-       ...
+        using PixelsForGlory.GradientGenerator;
+        ...
    
-       var gradient = new RadialGradient(0, 0, 128, 128, false);
-       float[,] results = gradient.Generate();
+        var gradient = new RadialGradient(0, 0, 128, 128, false);
+        float[,] results = gradient.Generate();
 
    Result:
       
@@ -109,18 +109,18 @@ There are four types of gradients that can be generated:
    
    Code:
        
-       using PixelsForGlory.GradientGenerator;
-       ...
+        using PixelsForGlory.GradientGenerator;
+        ...
    
-       var gradient = new RadialGradient(0, 0, 128, 128, true,
-          new List<RadialGradient.RadialGradientDivision>()
-          {
-             new RadialGradient.RadialGradientDivision { Value = 0f, Point = Vector2.zero },
-             new RadialGradient.RadialGradientDivision { Value = 0f, Point = new Vector2(128.0f - (128.0f / 2 * 0.75f), 128.0f / 2 - (128.0f / 2 * 0.75f)) },
-             new RadialGradient.RadialGradientDivision { Value = 0.9f, Point = new Vector2(128.0f - (128.0f * 0.25f), 128.0f - (128.0f * 0.25f)) },
-             new RadialGradient.RadialGradientDivision { Value = 1f, Point = new Vector2(128.0f / 2, 128.0f / 2) }
+        var gradient = new RadialGradient(0, 0, 128, 128, true,
+           new List<RadialGradient.RadialGradientDivision>()
+           {
+              new RadialGradient.RadialGradientDivision { Value = 0f, Point = Vector2.zero },
+              new RadialGradient.RadialGradientDivision { Value = 0f, Point = new Vector2(128.0f - (128.0f / 2 * 0.75f), 128.0f / 2 - (128.0f / 2 * 0.75f)) },
+              new RadialGradient.RadialGradientDivision { Value = 0.9f, Point = new Vector2(128.0f - (128.0f * 0.25f), 128.0f - (128.0f * 0.25f)) },
+              new RadialGradient.RadialGradientDivision { Value = 1f, Point = new Vector2(128.0f / 2, 128.0f / 2) }
           });
-       float[,] results = gradient.Generate();
+        float[,] results = gradient.Generate();
 
    Result:
       
