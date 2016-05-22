@@ -2,7 +2,6 @@
 Library to create gradients for use in Unity3D.  
 
 Build status:
-
 [![Build status](https://ci.appveyor.com/api/projects/status/hmdj9iroob2erp1r/branch/master?svg=true)](https://ci.appveyor.com/project/LlamaBot/gradientgenerator/branch/master)
 
 ## Building
