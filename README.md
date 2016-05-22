@@ -2,7 +2,8 @@
 Library to create gradients for use in Unity3D.  
 
 Build status:
-TBD
+
+[![Build status](https://ci.appveyor.com/api/projects/status/hmdj9iroob2erp1r/branch/master?svg=true)](https://ci.appveyor.com/project/LlamaBot/gradientgenerator/branch/master)
 
 ## Building
 The solution has a reference set for `UnityEngine.dll`, but the path for this assembly is not set. To build the library, a reference path must be set to the Managed directory (Default is C:\Program Files\Unity\Editor\Data\Managed): 
