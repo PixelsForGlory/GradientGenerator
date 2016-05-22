@@ -5,7 +5,4 @@ obj/
 *.sln.DotSettings.user
 Thumbs.db
 
-GradientGenerator/Properties/
 GradientGenerator/TestResults/
-GradientGeneratorTest/Properties/
-
