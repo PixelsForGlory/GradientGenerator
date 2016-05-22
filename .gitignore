@@ -1,0 +1,11 @@
+.vs/
+bin/
+obj/
+*.csproj.user
+*.sln.DotSettings.user
+Thumbs.db
+
+GradientGenerator/Properties/
+GradientGenerator/TestResults/
+GradientGeneratorTest/Properties/
+
