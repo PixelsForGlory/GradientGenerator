@@ -126,3 +126,13 @@ There are four types of gradients that can be generated:
    **Result:**
       
       ![Radial Gradient](../../../Screenshots/blob/master/\GradientGenerator/RadialGradientDivision.png?raw=true "Radial Gradient")
+	  
+All of the gradients have the ability to generate a certain pixel range of the gradient.  For example, if you want to genrate a quarter of a 256 x 256 gradient, the following code will do just this:
+
+    using PixelsForGlory.GradientGenerator;
+    ...
+    
+    var gradient = new SquareGradient(256, 256);
+    float[,] results = gradient.Generate(0, 0, 128, 128);
+
+The first two values represent a starting x and y pixel on the gradient.  The last two values represent the length of the gradient you want to generate from those two values.

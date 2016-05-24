@@ -9,17 +9,19 @@ namespace PixelsForGlory.GradientGenerator
     {
         public RampGradient(int lengthX, int lengthY) : base(lengthX, lengthY){}
 
-        public override float[,] Generate()
+        public override float[,] Generate(int startX, int startY, int lengthX, int lengthY)
         {
-            for(int x = 0; x < LengthX; x++)
+            var values = new float[lengthX, lengthY];
+
+            for (int x = 0; x < lengthX; x++)
             {
-                for(int y = 0; y < LengthY; y++)
+                for(int y = 0; y < lengthY; y++)
                 {
-                    Values[x, y] = (float) x / LengthXf;
+                    values[x, y] = (startX + x) / LengthXf;
                 }
             }
 
-            return Values;
+            return values;
         }
     }
 }

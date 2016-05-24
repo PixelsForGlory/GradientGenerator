@@ -31,11 +31,6 @@ namespace PixelsForGlory.GradientGenerator
         public readonly float LengthYf;
 
         /// <summary>
-        /// 2D array of gradient values
-        /// </summary>
-        protected float[,] Values;
-
-        /// <summary>
         /// Gradient constructor
         /// </summary>
         /// <param name="lengthX">Length of gradient on the x axis</param>
@@ -46,15 +41,26 @@ namespace PixelsForGlory.GradientGenerator
             LengthY = lengthY;
             LengthXf = LengthX;
             LengthYf = LengthY;
-
-            Values = new float[LengthX, LengthY];
         }
 
         /// <summary>
         /// Generate the full gradient
         /// </summary>
         /// <returns>2D array of gradient values</returns>
-        public abstract float[,] Generate();
+        public float[,] Generate()
+        {
+            return Generate(0, LengthX - 1, 0, LengthY - 1);
+        }
+
+        /// <summary>
+        /// Generate part of the gradient
+        /// </summary>
+        /// <param name="startX">Start point to generate on the x axis</param>
+        /// <param name="startY">Start point to generate on the y axis</param>
+        /// <param name="lengthX">Length out from the start point to go on the x axis</param>
+        /// <param name="lengthY">Length out from the start point to go on the y axis</param>
+        /// <returns></returns>
+        public abstract float[,] Generate(int startX, int startY, int lengthX, int lengthY);
 
         [Flags]
         [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -127,10 +133,13 @@ namespace PixelsForGlory.GradientGenerator
         /// <param name="centerY">Y value for the center of the ellipse</param>
         /// <param name="radiusX">Radius of the ellipse on the x axis</param>
         /// <param name="radiusY">Radius of the ellipse on the y axis</param>
+        /// <param name="startX">Start point to generate on the x axis</param>
+        /// <param name="startY">Start point to generate on the y axis</param>
+        /// <param name="lengthX">Length out from the start point to go on the x axis</param>
+        /// <param name="lengthY">Length out from the start point to go on the y axis</param>
         /// <param name="quadrantData">What quadrants are being plotted</param>
         /// <param name="result">The resulting gradient values from the method</param>
-        protected void PlotEllipse(int centerX, int centerY, int radiusX, int radiusY, QuadrantData quadrantData,
-            float[,] result)
+        protected void PlotEllipse(int centerX, int centerY, int radiusX, int radiusY, int startX, int startY, int lengthX, int lengthY, QuadrantData quadrantData, float[,] result)
         {
             // If the radius on either axis is 0 there is nothing to do here
             if(radiusX == 0 || radiusY == 0)
@@ -156,7 +165,7 @@ namespace PixelsForGlory.GradientGenerator
             // 1st set of points y' > -1
             while(stoppingX >= stoppingY)
             {
-                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, quadrantData, result);
+                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, startX, startY, lengthX, lengthY, quadrantData, result);
 
                 y++;
                 stoppingY += radius2XSquared;
@@ -184,7 +193,7 @@ namespace PixelsForGlory.GradientGenerator
             // 2nd set of points y' < -1
             while(stoppingX <= stoppingY)
             {
-                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, quadrantData, result);
+                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, startX, startY, lengthX, lengthY, quadrantData, result);
                 x++;
                 stoppingX += radius2YSquared;
                 error += changeX;
@@ -228,10 +237,13 @@ namespace PixelsForGlory.GradientGenerator
         /// <param name="y">Current y value to calculate for</param>
         /// <param name="currentRadiusX">Current radius on the x axis to calculate for</param>
         /// <param name="currentRadiusY">Current radius on the y axis to calculate for</param>
+        /// <param name="startX">Start point to generate on the x axis</param>
+        /// <param name="startY">Start point to generate on the y axis</param>
+        /// <param name="lengthX">Length out from the start point to go on the x axis</param>
+        /// <param name="lengthY">Length out from the start point to go on the y axis</param>
         /// <param name="quadrantData">What quadrants are being calculated for</param>
         /// <param name="result">The gradient results from the method</param>
-        private void PlotAndFillEllipseArea(int centerX, int centerY, int x, int y, float currentRadiusX,
-            float currentRadiusY, QuadrantData quadrantData, float[,] result)
+        private void PlotAndFillEllipseArea(int centerX, int centerY, int x, int y, float currentRadiusX, float currentRadiusY, int startX, int startY, int lengthX, int lengthY, QuadrantData quadrantData, float[,] result)
         {
             // Find the angle between 0 degree point and current point
             var pointC = Vector2.zero;
@@ -245,63 +257,65 @@ namespace PixelsForGlory.GradientGenerator
             float angle = Mathf.Acos((Mathf.Pow(a, 2f) + Mathf.Pow(b, 2f) - Mathf.Pow(c, 2)) / (2 * a * b));
 
             // Calculate the area that will be processed
-            PlotData plotData;
-            if((quadrantData.Quadrants & CartesianQuadrant.All) == CartesianQuadrant.All)
+            PlotData originalPlotData;
+            if ((quadrantData.Quadrants & CartesianQuadrant.All) == CartesianQuadrant.All)
             {
-                plotData = new PlotData(centerX - x, centerX + x, centerY - y, centerY + y);
+                originalPlotData = new PlotData(centerX - x, centerX + x, centerY - y, centerY + y);
             }
-            else if((quadrantData.Quadrants & (CartesianQuadrant.I | CartesianQuadrant.II)) ==
-                    (CartesianQuadrant.I | CartesianQuadrant.II))
+            else if((quadrantData.Quadrants & (CartesianQuadrant.I | CartesianQuadrant.II)) == (CartesianQuadrant.I | CartesianQuadrant.II))
             {
-                plotData = new PlotData(centerX - x, centerX + x, centerY, centerY + y);
+                originalPlotData = new PlotData(centerX - x, centerX + x, centerY, centerY + y);
             }
-            else if((quadrantData.Quadrants & (CartesianQuadrant.II | CartesianQuadrant.III)) ==
-                    (CartesianQuadrant.II | CartesianQuadrant.III))
+            else if((quadrantData.Quadrants & (CartesianQuadrant.II | CartesianQuadrant.III)) == (CartesianQuadrant.II | CartesianQuadrant.III))
             {
-                plotData = new PlotData(centerX - x, centerX, centerY - y, centerY + y);
+                originalPlotData = new PlotData(centerX - x, centerX, centerY - y, centerY + y);
             }
-            else if((quadrantData.Quadrants & (CartesianQuadrant.III | CartesianQuadrant.IV)) ==
-                    (CartesianQuadrant.III | CartesianQuadrant.IV))
+            else if((quadrantData.Quadrants & (CartesianQuadrant.III | CartesianQuadrant.IV)) == (CartesianQuadrant.III | CartesianQuadrant.IV))
             {
-                plotData = new PlotData(centerX - x, centerX + x, centerY - y, centerY);
+                originalPlotData = new PlotData(centerX - x, centerX + x, centerY - y, centerY);
             }
-            else if((quadrantData.Quadrants & (CartesianQuadrant.I | CartesianQuadrant.IV)) ==
-                    (CartesianQuadrant.I | CartesianQuadrant.IV))
+            else if((quadrantData.Quadrants & (CartesianQuadrant.I | CartesianQuadrant.IV)) == (CartesianQuadrant.I | CartesianQuadrant.IV))
             {
-                plotData = new PlotData(centerX, centerX + x, centerY - y, centerY + y);
+                originalPlotData = new PlotData(centerX, centerX + x, centerY - y, centerY + y);
             }
             else if((quadrantData.Quadrants & CartesianQuadrant.I) == CartesianQuadrant.I)
             {
-                plotData = new PlotData(centerX, centerX + x, centerY, centerY + y);
+                originalPlotData = new PlotData(centerX, centerX + x, centerY, centerY + y);
             }
             else if((quadrantData.Quadrants & CartesianQuadrant.II) == CartesianQuadrant.II)
             {
-                plotData = new PlotData(centerX - x, centerX, centerY, centerY + y);
+                originalPlotData = new PlotData(centerX - x, centerX, centerY, centerY + y);
             }
             else if((quadrantData.Quadrants & CartesianQuadrant.III) == CartesianQuadrant.III)
             {
-                plotData = new PlotData(centerX - x, centerX, centerY - y, centerY);
+                originalPlotData = new PlotData(centerX - x, centerX, centerY - y, centerY);
             }
             else // ((quadrantData & CartesianQuadrant.IV) == CartesianQuadrant.IV)
             {
-                plotData = new PlotData(centerX, centerX + x, centerY - y, centerY);
+                originalPlotData = new PlotData(centerX, centerX + x, centerY - y, centerY);
             }
 
+            var bounds = new PlotData(startX, startX + lengthX - 1, startY, startY + lengthY - 1);
+            var plotData = new PlotData(
+                Mathf.Max(bounds.StartX, originalPlotData.StartX),
+                Mathf.Min(bounds.EndX, originalPlotData.EndX),
+                Mathf.Max(bounds.StartY, originalPlotData.StartY),
+                Mathf.Min(bounds.EndY, originalPlotData.EndY));
+
             // Generate result values
-            for(int currentX = plotData.StartX; currentX <= plotData.EndX; currentX++)
+            for (int currentX = plotData.StartX; currentX <= plotData.EndX; currentX++)
             {
                 for(int currentY = plotData.StartY; currentY <= plotData.EndY; currentY++)
                 {
-                    if(
-                        currentX < LengthX &&
-                        currentX >= 0 &&
-                        currentY < LengthY &&
-                        currentY >= 0 &&
-                        Math.Abs(result[currentX, currentY] - 1f) < 0.000001f
-                        )
+                    if (
+                    currentX < LengthX &&
+                    currentX >= 0 &&
+                    currentY < LengthY &&
+                    currentY >= 0 &&
+                    Math.Abs(result[currentX - startX, currentY - startY] - 1f) < 0.000001f
+                    )
                     {
-                        result[currentX, currentY] = quadrantData.CalculateGradientValue(angle, currentRadiusX,
-                            currentRadiusY);
+                        result[currentX - startX, currentY - startY] = quadrantData.CalculateGradientValue(angle, currentRadiusX, currentRadiusY);
                     }
                 }
             }

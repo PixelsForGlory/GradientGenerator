@@ -250,20 +250,22 @@ namespace PixelsForGlory.GradientGenerator
             }
         }
 
-        public override float[,] Generate()
+        public override float[,] Generate(int startX, int startY, int lengthX, int lengthY)
         {
+            var values = new float[lengthX, lengthY];
+
             // Initialize values
-            for(int x = 0; x < LengthX; x++)
+            for(int x = 0; x < lengthX; x++)
             {
-                for(int y = 0; y < LengthY; y++)
+                for(int y = 0; y < lengthY; y++)
                 {
-                    if(x == _centerPointX && y == _centerPointY)
+                    if((startX + x) == _centerPointX && (startY + y) == _centerPointY)
                     {
-                        Values[x, y] = 0f;
+                        values[x, y] = 0f;
                     }
                     else
                     {
-                        Values[x, y] = 1f;
+                        values[x, y] = 1f;
                     }
                 }
             }
@@ -292,15 +294,14 @@ namespace PixelsForGlory.GradientGenerator
                 float currentRadiusY = startRadiusY;
                 while(currentRadiusX < quadrantData.LengthXf && currentRadiusY < quadrantData.LengthYf)
                 {
-                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX),
-                        Mathf.RoundToInt(currentRadiusY), quadrantData, Values);
+                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, values);
 
                     currentRadiusX += incrementRadiusX;
                     currentRadiusY += incrementRadiusY;
                 }
             }
 
-            return Values;
+            return values;
         }
     }
 }
