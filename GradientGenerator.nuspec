@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>PixelsForGlory.GradientGenerator</id>
+    <version>0.0.0</version>
+    <authors>afuzzyllama</authors>
+    <owners>afuzzyllama</owners>
+    <licenseUrl>https://github.com/PixelsForGlory/GradientGenerator/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/PixelsForGlory/GradientGenerator/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Library to create gradients for use in Unity3D.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>Unity3D Gradient</tags>
+  </metadata>
+  <files>
+    <file src="GradientGenerator\bin\Release\GradientGenerator.dll" target="lib\net35-Unity Full v3.5" />
+	<file src="GradientGenerator\bin\Release\GradientGenerator.pdb" target="lib\net35-Unity Full v3.5" />
+  </files>
+</package>
