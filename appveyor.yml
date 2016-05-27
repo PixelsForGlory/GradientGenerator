@@ -74,7 +74,7 @@ test_script:
 # DEPLOYMENT CONFIGURATION
 # ------------------------
 deploy:
-  provider: GitHub
+- provider: GitHub
   auth_token:
     secure: 6rKcqEAzPD0o7RiGVFFaUVXts2nGs3w9SOMTayT3hFQVpc2rCX1rh5Lsg4SqkkrP
   tag: GradientGenerator-v$(appveyor_build_version)
@@ -87,8 +87,7 @@ deploy:
     branch: master
     appveyor_repo_tag: false 
 
-deploy:
-  provider: NuGet
+- provider: NuGet
   server: http://pixelsforglory.azurewebsites.net/
   api_key:
     secure: uCzJhW61wTtA8dT/osbz/ZlAP/D6xKNWoC+Pz93n3DGFi6pZNVH9lfjRFU5E3M64
