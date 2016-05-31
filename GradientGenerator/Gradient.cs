@@ -49,7 +49,7 @@ namespace PixelsForGlory.GradientGenerator
         /// <returns>2D array of gradient values</returns>
         public float[,] Generate()
         {
-            return Generate(0, LengthX - 1, 0, LengthY - 1);
+            return Generate(0, 0, LengthX, LengthY);
         }
 
         /// <summary>
