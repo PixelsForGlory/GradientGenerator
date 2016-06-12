@@ -6,10 +6,12 @@ Build status:
 [![Build status](https://ci.appveyor.com/api/projects/status/hmdj9iroob2erp1r/branch/master?svg=true)](https://ci.appveyor.com/project/LlamaBot/gradientgenerator/branch/master)
 
 ## Building
-The solution has a reference set for `UnityEngine.dll`, but the path for this assembly is not set. To build the library, a reference path must be set to the Managed directory (Default is C:\Program Files\Unity\Editor\Data\Managed): 
+The solution has a reference set for `UnityEngine.dll`, but the path for this assembly is not set. To build the library, a reference path must be set to the Managed directory (Default is C:\Program Files\Unity\Editor\Data\Managed).
 
 ## Installation
 From a build or downloaded release, copy the `GradientGenerator.dll` to `[PROJECT DIR]\Assets\Plugins`
+
+If using the Pixels for Glory NuGet repository at http://pixelsforglory.azurewebsites.net/nuget, install the `PixelsForGlory.GradientGenerator` package into your own class library project or install the `PixelsForGlory.Unity3D.GradientGenerator` package into a Unity3D project.
 
 ## Usage
 There are four types of gradients that can be generated:
