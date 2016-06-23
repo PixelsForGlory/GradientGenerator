@@ -130,6 +130,8 @@ namespace PixelsForGlory.GradientGenerator
         /// </summary>
         private readonly List<QuadrantData> _quadrantData;
 
+        private readonly List<SpiralGradientDivision> _divisions;
+
         /// <summary>
         /// Spiral gradient constructor
         /// </summary>
@@ -138,20 +140,24 @@ namespace PixelsForGlory.GradientGenerator
         /// <param name="radiusX">Radius of the gradient on the x axis</param>
         /// <param name="radiusY">Radius of the gradient on the y axis</param>
         /// <param name="extendToEdge">Should the gradient generate a circle or push the values all the way to the edge of the generated square</param>
-        /// <param name="divisions">Divisions that represent how this gradient should be generated</param>
+        /// <param name="divisions">Divisions that represent how this gradient should be generated.  Sorted from smallest point to largest point.</param>
         public SpiralGradient(int centerPointX, int centerPointY, int radiusX, int radiusY, bool extendToEdge, List<SpiralGradientDivision> divisions = null) 
             : base(radiusX * 2, radiusY * 2)
         {
             // If no divisions are supplied, generate basic divisions
             if(divisions == null)
             {
-                divisions = new List<SpiralGradientDivision>
+                _divisions = new List<SpiralGradientDivision>
                 {
                     new SpiralGradientDivision {Value = 0f, Point = 0f},
                     new SpiralGradientDivision {Value = 1f, Point = 2f * Mathf.PI}
                 };
             }
-            
+            else
+            {
+                _divisions = new List<SpiralGradientDivision>(divisions);
+            }
+
             _centerPointX = centerPointX + radiusX;
             _centerPointY = centerPointY + radiusY;
 
@@ -163,10 +169,10 @@ namespace PixelsForGlory.GradientGenerator
                 radiusMultiplier = 2;
             }
 
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.I, divisions));
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.II, divisions));
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.III, divisions));
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.IV, divisions));
+            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.I, _divisions));
+            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.II, _divisions));
+            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.III, _divisions));
+            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.IV, _divisions));
         }
 
         public override float[,] Generate(int startX, int startY, int lengthX, int lengthY)
@@ -180,11 +186,11 @@ namespace PixelsForGlory.GradientGenerator
                 {
                     if((startX + x) == _centerPointX && (startY + y) == _centerPointY)
                     {
-                        values[x, y] = 0f;
+                        values[x, y] = _divisions[0].Value;
                     }
                     else
                     {
-                        values[x, y] = 1f;
+                        values[x, y] = _divisions[_divisions.Count - 1].Value;
                     }
                 }
             }
@@ -214,7 +220,7 @@ namespace PixelsForGlory.GradientGenerator
 
                 while(currentRadiusX < quadrantData.LengthXf && currentRadiusY < quadrantData.LengthYf)
                 {
-                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, values);
+                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, _divisions[_divisions.Count - 1].Value, values);
 
                     currentRadiusX += incrementRadiusX;
                     currentRadiusY += incrementRadiusY;

@@ -138,8 +138,9 @@ namespace PixelsForGlory.GradientGenerator
         /// <param name="lengthX">Length out from the start point to go on the x axis</param>
         /// <param name="lengthY">Length out from the start point to go on the y axis</param>
         /// <param name="quadrantData">What quadrants are being plotted</param>
+        /// <param name="initializeValue">The value was the result array initialized with</param>
         /// <param name="result">The resulting gradient values from the method</param>
-        protected void PlotEllipse(int centerX, int centerY, int radiusX, int radiusY, int startX, int startY, int lengthX, int lengthY, QuadrantData quadrantData, float[,] result)
+        protected void PlotEllipse(int centerX, int centerY, int radiusX, int radiusY, int startX, int startY, int lengthX, int lengthY, QuadrantData quadrantData, float initializeValue, float[,] result)
         {
             // If the radius on either axis is 0 there is nothing to do here
             if(radiusX == 0 || radiusY == 0)
@@ -165,7 +166,7 @@ namespace PixelsForGlory.GradientGenerator
             // 1st set of points y' > -1
             while(stoppingX >= stoppingY)
             {
-                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, startX, startY, lengthX, lengthY, quadrantData, result);
+                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, startX, startY, lengthX, lengthY, quadrantData, initializeValue, result);
 
                 y++;
                 stoppingY += radius2XSquared;
@@ -193,7 +194,7 @@ namespace PixelsForGlory.GradientGenerator
             // 2nd set of points y' < -1
             while(stoppingX <= stoppingY)
             {
-                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, startX, startY, lengthX, lengthY, quadrantData, result);
+                PlotAndFillEllipseArea(centerX, centerY, x, y, radiusX, radiusY, startX, startY, lengthX, lengthY, quadrantData, initializeValue, result);
                 x++;
                 stoppingX += radius2YSquared;
                 error += changeX;
@@ -241,9 +242,10 @@ namespace PixelsForGlory.GradientGenerator
         /// <param name="startY">Start point to generate on the y axis</param>
         /// <param name="lengthX">Length out from the start point to go on the x axis</param>
         /// <param name="lengthY">Length out from the start point to go on the y axis</param>
-        /// <param name="quadrantData">What quadrants are being calculated for</param>
+        /// <param name="quadrantData">The quadrants that are being calculated for</param>
+        /// <param name="initializeValue">The value was the result array initialized with</param>
         /// <param name="result">The gradient results from the method</param>
-        private void PlotAndFillEllipseArea(int centerX, int centerY, int x, int y, float currentRadiusX, float currentRadiusY, int startX, int startY, int lengthX, int lengthY, QuadrantData quadrantData, float[,] result)
+        private void PlotAndFillEllipseArea(int centerX, int centerY, int x, int y, float currentRadiusX, float currentRadiusY, int startX, int startY, int lengthX, int lengthY, QuadrantData quadrantData, float initializeValue, float[,] result)
         {
             // Find the angle between 0 degree point and current point
             var pointC = Vector2.zero;
@@ -311,8 +313,8 @@ namespace PixelsForGlory.GradientGenerator
                     currentX < LengthX &&
                     currentX >= 0 &&
                     currentY < LengthY &&
-                    currentY >= 0 &&
-                    Math.Abs(result[currentX - startX, currentY - startY] - 1f) < 0.000001f
+                    currentY >= 0 && 
+                    Math.Abs(result[currentX - startX, currentY - startY] - initializeValue) < 0.000001f
                     )
                     {
                         result[currentX - startX, currentY - startY] = quadrantData.CalculateGradientValue(angle, currentRadiusX, currentRadiusY);

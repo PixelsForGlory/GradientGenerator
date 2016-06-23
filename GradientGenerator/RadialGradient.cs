@@ -96,24 +96,38 @@ namespace PixelsForGlory.GradientGenerator
         private readonly int _centerPointX;
         private readonly int _centerPointY;
         private readonly List<QuadrantData> _quadrantData;
+        private readonly List<RadialGradientDivision> _divisions;
 
+        /// <summary>
+        /// Radial Gradient constructor
+        /// </summary>
+        /// <param name="centerPointX">Center point of the gradient on the x axis</param>
+        /// <param name="centerPointY">Center point of the gradient on the y axis</param>
+        /// <param name="radiusX">Radius of the gradient on the x axis</param>
+        /// <param name="radiusY">Radius of the gradient on the y axis</param>
+        /// <param name="extendToEdge">Should the gradient extend all the way to the edges</param>
+        /// <param name="divisions">Divisions that represent how this gradient should be generated.  Sorted from smallest point to largest point.</param>
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         public RadialGradient(
             int centerPointX,
             int centerPointY,
             int radiusX,
             int radiusY,
-            bool clampToBounds,
+            bool extendToEdge,
             List<RadialGradientDivision> divisions = null) : base(radiusX * 2, radiusY * 2)
         {
             // If no divisions are supplied, generate basic divisions
             if(divisions == null)
             {
-                divisions = new List<RadialGradientDivision>
+                _divisions = new List<RadialGradientDivision>
                 {
-                    new RadialGradientDivision() {Value = 1f, Point = new Vector2(radiusX, radiusY)},
-                    new RadialGradientDivision() {Value = 0f, Point = Vector2.zero}
+                    new RadialGradientDivision() {Value = 0f, Point = Vector2.zero},
+                    new RadialGradientDivision() {Value = 1f, Point = new Vector2(radiusX, radiusY)}
                 };
+            }
+            else
+            {
+                _divisions = new List<RadialGradientDivision>(divisions);
             }
 
             _centerPointX = centerPointX + radiusX;
@@ -122,14 +136,14 @@ namespace PixelsForGlory.GradientGenerator
             _quadrantData = new List<QuadrantData>();
 
             // Generate quadrant data.  If not centered and clamped to bounds, create necessary quadrants to generate desired gradient
-            if(centerPointX == 0 && centerPointY == 0 || clampToBounds == false)
+            if(centerPointX == 0 && centerPointY == 0 || extendToEdge == false)
             {
-                _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.All, divisions));
+                _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.All, _divisions));
             }
             else if(centerPointX == 0 && centerPointY != 0)
             {
                 var clampedDivisionsY = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in divisions)
+                foreach(RadialGradientDivision division in _divisions)
                 {
                     clampedDivisionsY.Add(new RadialGradientDivision()
                     {
@@ -143,18 +157,18 @@ namespace PixelsForGlory.GradientGenerator
                 if(centerPointY > 0)
                 {
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY - centerPointY, CartesianQuadrant.I | CartesianQuadrant.II, clampedDivisionsY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.III | CartesianQuadrant.IV, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.III | CartesianQuadrant.IV, _divisions));
                 }
                 else // centerPointY < 0
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.I | CartesianQuadrant.II, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.I | CartesianQuadrant.II, _divisions));
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY + centerPointY, CartesianQuadrant.III | CartesianQuadrant.IV, clampedDivisionsY));
                 }
             }
             else if(centerPointX != 0 && centerPointY == 0)
             {
                 var clampedDivisionsX = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in divisions)
+                foreach(RadialGradientDivision division in _divisions)
                 {
                     clampedDivisionsX.Add(new RadialGradientDivision()
                     {
@@ -169,12 +183,12 @@ namespace PixelsForGlory.GradientGenerator
                 if(centerPointX > 0)
                 {
                     _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY, CartesianQuadrant.I | CartesianQuadrant.IV, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.II | CartesianQuadrant.III, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.II | CartesianQuadrant.III, _divisions));
                 }
                 else // centerPointX < 0
                 {
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY,
-                        CartesianQuadrant.I | CartesianQuadrant.IV, divisions));
+                        CartesianQuadrant.I | CartesianQuadrant.IV, _divisions));
                     _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY,
                         CartesianQuadrant.II | CartesianQuadrant.III, clampedDivisionsX));
                 }
@@ -182,7 +196,7 @@ namespace PixelsForGlory.GradientGenerator
             else // centerPointX != 0 && centerPointY != 0
             {
                 var clampedDivisionsX = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in divisions)
+                foreach(RadialGradientDivision division in _divisions)
                 {
                     clampedDivisionsX.Add(new RadialGradientDivision()
                     {
@@ -195,7 +209,7 @@ namespace PixelsForGlory.GradientGenerator
                 }
 
                 var clampedDivisionsY = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in divisions)
+                foreach(RadialGradientDivision division in _divisions)
                 {
                     clampedDivisionsY.Add(new RadialGradientDivision()
                     {
@@ -207,7 +221,7 @@ namespace PixelsForGlory.GradientGenerator
                 }
 
                 var clampedDivisionsXY = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in divisions)
+                foreach(RadialGradientDivision division in _divisions)
                 {
                     clampedDivisionsXY.Add(new RadialGradientDivision()
                     {
@@ -223,13 +237,13 @@ namespace PixelsForGlory.GradientGenerator
                 {
                     _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY - centerPointY, CartesianQuadrant.I, clampedDivisionsXY));
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY - centerPointY, CartesianQuadrant.II, clampedDivisionsY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.III, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.III, _divisions));
                     _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY, CartesianQuadrant.IV, clampedDivisionsX));
                 }
                 else if(centerPointX > 0 && centerPointY < 0)
                 {
                     _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY, CartesianQuadrant.I, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.II, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.II, _divisions));
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY + centerPointY, CartesianQuadrant.III, clampedDivisionsY));
                     _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY + centerPointY, CartesianQuadrant.IV, clampedDivisionsXY));
                 }
@@ -238,11 +252,11 @@ namespace PixelsForGlory.GradientGenerator
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY - centerPointY, CartesianQuadrant.I, clampedDivisionsY));
                     _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY - centerPointY, CartesianQuadrant.II, clampedDivisionsXY));
                     _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY, CartesianQuadrant.III, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.IV, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.IV, _divisions));
                 }
                 else //centerPointX < 0 && centerPointY < 0
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.I, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.I, _divisions));
                     _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY, CartesianQuadrant.II, clampedDivisionsX));
                     _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY + centerPointY, CartesianQuadrant.III, clampedDivisionsXY));
                     _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY + centerPointY, CartesianQuadrant.IV, clampedDivisionsY));
@@ -261,11 +275,11 @@ namespace PixelsForGlory.GradientGenerator
                 {
                     if((startX + x) == _centerPointX && (startY + y) == _centerPointY)
                     {
-                        values[x, y] = 0f;
+                        values[x, y] = _divisions[0].Value;
                     }
                     else
                     {
-                        values[x, y] = 1f;
+                        values[x, y] = _divisions[_divisions.Count - 1].Value;
                     }
                 }
             }
@@ -294,7 +308,7 @@ namespace PixelsForGlory.GradientGenerator
                 float currentRadiusY = startRadiusY;
                 while(currentRadiusX < quadrantData.LengthXf && currentRadiusY < quadrantData.LengthYf)
                 {
-                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, values);
+                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, _divisions[_divisions.Count - 1].Value, values);
 
                     currentRadiusX += incrementRadiusX;
                     currentRadiusY += incrementRadiusY;
