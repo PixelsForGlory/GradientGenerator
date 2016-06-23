@@ -33,13 +33,20 @@ namespace GradientGeneratorTest
                     }
                 }
 
+                int differentPixels = 0;
                 for (int x = 0; x < results.GetLength(0); x++)
                 {
                     for (int y = 0; y < results.GetLength(1); y++)
                     {
-                        Assert.AreEqual(testBitmap.GetPixel(x, y), originalBitmap.GetPixel(x, y));
+                        if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
+                        {
+                            differentPixels++;
+                        }
                     }
                 }
+
+                // Allow for a 0.5% difference
+                Assert.IsTrue(differentPixels < Mathf.RoundToInt((width * height) * 0.005f));
             }
 
             gradient = new RadialGradient(0, 0, width / 2, height / 2, true,
@@ -64,13 +71,20 @@ namespace GradientGeneratorTest
                     }
                 }
 
+                int differentPixels = 0;
                 for (int x = 0; x < results.GetLength(0); x++)
                 {
                     for (int y = 0; y < results.GetLength(1); y++)
                     {
-                        Assert.AreEqual(testBitmap.GetPixel(x, y), originalBitmap.GetPixel(x, y));
+                        if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
+                        {
+                            differentPixels++;
+                        }
                     }
                 }
+
+                // Allow for a 0.5% difference
+                Assert.IsTrue(differentPixels < Mathf.RoundToInt((width * height) * 0.005f));
             }
         }
 
@@ -106,13 +120,20 @@ namespace GradientGeneratorTest
                             }
                         }
 
+                        int differentPixels = 0;
                         for (int x = 0; x < results.GetLength(0); x++)
                         {
                             for (int y = 0; y < results.GetLength(1); y++)
                             {
-                                Assert.AreEqual(testBitmap.GetPixel(x, y), originalBitmap.GetPixel(x, y));
+                                if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
+                                {
+                                    differentPixels++;
+                                }
                             }
                         }
+
+                        // Allow for a 0.5% difference
+                        Assert.IsTrue(differentPixels < Mathf.RoundToInt((width * height) * 0.005f));
                     }
                 }
             }
