@@ -9,19 +9,9 @@ namespace PixelsForGlory.GradientGenerator
     {
         public SquareGradient(int lengthX, int lengthY) : base(lengthX, lengthY){}
 
-        public override float[,] Generate(int startX, int startY, int lengthX, int lengthY)
+        public override float Generate(int x, int y)
         {
-            var values = new float[lengthX, lengthY];
-
-            for (int x = 0; x < lengthX; x++)
-            {
-                for(int y = 0; y < lengthY; y++)
-                {
-                    values[x, y] = ((startX + x) / LengthXf + (startY + y) / LengthYf) / 2f;
-                }
-            }
-
-            return values;
+            return (x / LengthXf + y / LengthYf) / 2f;
         }
     }
 }

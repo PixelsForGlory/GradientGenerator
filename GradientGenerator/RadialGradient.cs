@@ -1,6 +1,6 @@
 // Copyright 2016 afuzzyllama. All Rights Reserved.
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using UnityEngine;
 
 namespace PixelsForGlory.GradientGenerator
@@ -16,7 +16,7 @@ namespace PixelsForGlory.GradientGenerator
         public struct RadialGradientDivision
         {
             /// <summary>
-            /// Radius of the ellipse to division on (0 to radiusX, 0 to radiusY)
+            /// Radius of the ellipse to division on (0 to halfLengthX, 0 to radiusY)
             /// </summary>
             public Vector2 Point;
 
@@ -32,6 +32,16 @@ namespace PixelsForGlory.GradientGenerator
         protected class RadialQuadrantData : QuadrantData
         {
             /// <summary>
+            /// x in ratio of x:y
+            /// </summary>
+            public readonly float RatioX;
+
+            /// <summary>
+            /// y in ratio of x:y
+            /// </summary>
+            public readonly float RatioY;
+
+            /// <summary>
             /// A list of divisions that the gradient will generate from
             /// </summary>
             private readonly List<RadialGradientDivision> _divisions;
@@ -39,14 +49,28 @@ namespace PixelsForGlory.GradientGenerator
             /// <summary>
             /// Radial quadrant data constructor
             /// </summary>
-            /// <param name="lengthX">Length of the quadrant on the x axis</param>
-            /// <param name="lengthY">Length of the quadrant on the y axis</param>
-            /// <param name="quadrants">What quadrants this instance represents</param>
-            /// <param name="divisions">The division that will make up this gradient</param>
-            public RadialQuadrantData(int lengthX, int lengthY, CartesianQuadrant quadrants, List<RadialGradientDivision> divisions)
-                : base(lengthX, lengthY, quadrants)
+            /// <param name="minX">Left most point on a boundary</param>
+            /// <param name="minY">Bottom most point on a bounary</param>
+            /// <param name="lengthX">Length from minX to extend</param>
+            /// <param name="lengthY">Length from minY to extend</param>
+            /// <param name="ratioX">x in ratio of x:y</param>
+            /// <param name="ratioY">y in ratio of x:y</param>
+            /// <param name="quadrants">Quadrant or quadrants this instance represents</param>
+            /// <param name="divisions"></param>
+            public RadialQuadrantData(
+                int minX, 
+                int minY, 
+                int lengthX, 
+                int lengthY, 
+                float ratioX, 
+                float ratioY, 
+                CartesianQuadrant quadrants, 
+                IList<RadialGradientDivision> divisions)
+                : base(minX, minY, lengthX, lengthY, quadrants)
             {
-                _divisions = divisions;
+                RatioX = ratioX;
+                RatioY = ratioY;
+                _divisions = new List<RadialGradientDivision>(divisions);
             }
 
             public override float CalculateGradientValue(float angle, float x, float y)
@@ -93,229 +117,264 @@ namespace PixelsForGlory.GradientGenerator
             }
         }
 
+        /// <summary>
+        /// Center point of the gradient on the x-axis between 0 and LegnthX
+        /// </summary>
         private readonly int _centerPointX;
+
+        /// <summary>
+        /// Center point of the gradient on the y-axis between 0 and LengthY
+        /// </summary>
         private readonly int _centerPointY;
+
+        /// <summary>
+        /// Cartesian quadrants for the gradient
+        /// </summary>
         private readonly List<QuadrantData> _quadrantData;
-        private readonly List<RadialGradientDivision> _divisions;
 
         /// <summary>
         /// Radial Gradient constructor
         /// </summary>
-        /// <param name="centerPointX">Center point of the gradient on the x axis</param>
-        /// <param name="centerPointY">Center point of the gradient on the y axis</param>
-        /// <param name="radiusX">Radius of the gradient on the x axis</param>
-        /// <param name="radiusY">Radius of the gradient on the y axis</param>
-        /// <param name="extendToEdge">Should the gradient extend all the way to the edges</param>
-        /// <param name="divisions">Divisions that represent how this gradient should be generated.  Sorted from smallest point to largest point.</param>
-        [SuppressMessage("ReSharper", "InconsistentNaming")]
+        /// <param name="centerPointX">Center point of the gradient on the x-axis between 0 and LengthX</param>
+        /// <param name="centerPointY">Center point of the gradient on the y-axis between 0 and LegnthY</param>
+        /// <param name="ratioX">x in ratio of x:y</param>
+        /// <param name="ratioY">y in ratio of x:y</param>
+        /// <param name="lengthX">Length of gradient on the x-axis</param>
+        /// <param name="lengthY">Length of gradient on the y-axis</param>
+        /// <param name="clampToEdge">Should this gradient clamp to the edges or extend beyond the edge</param>
+        /// <param name="divisions">Division of the gradient based on radius.  Ordered from 0,0 -> (LengthX/2, LengthY/2)</param>
         public RadialGradient(
             int centerPointX,
             int centerPointY,
-            int radiusX,
-            int radiusY,
-            bool extendToEdge,
-            List<RadialGradientDivision> divisions = null) : base(radiusX * 2, radiusY * 2)
+            int ratioX,
+            int ratioY,
+            int lengthX,
+            int lengthY,
+            bool clampToEdge,
+            List<RadialGradientDivision> divisions = null) : base(lengthX, lengthY)
         {
+            _centerPointX = centerPointX;
+            _centerPointY = centerPointY;
+
+            int halfLengthX = lengthX / 2;
+            int halfLengthY = lengthY / 2;
+
             // If no divisions are supplied, generate basic divisions
-            if(divisions == null)
+            if( divisions == null)
             {
-                _divisions = new List<RadialGradientDivision>
+                divisions = new List<RadialGradientDivision>
                 {
-                    new RadialGradientDivision() {Value = 0f, Point = Vector2.zero},
-                    new RadialGradientDivision() {Value = 1f, Point = new Vector2(radiusX, radiusY)}
+                    new RadialGradientDivision() { Value = 0f, Point = Vector2.zero }
                 };
+
+                divisions.Add(ratioX > ratioY
+                    ? new RadialGradientDivision()
+                    {
+                        Value = 1f,
+                        Point = new Vector2(halfLengthX, halfLengthX * ratioY / (float) ratioX)
+                    }
+                    : new RadialGradientDivision()
+                    {
+                        Value = 1f,
+                        Point = new Vector2(halfLengthY * ratioX / (float) ratioY, halfLengthY)
+                    });
             }
             else
             {
-                _divisions = new List<RadialGradientDivision>(divisions);
+                divisions = new List<RadialGradientDivision>(divisions);
             }
-
-            _centerPointX = centerPointX + radiusX;
-            _centerPointY = centerPointY + radiusY;
 
             _quadrantData = new List<QuadrantData>();
 
             // Generate quadrant data.  If not centered and clamped to bounds, create necessary quadrants to generate desired gradient
-            if(centerPointX == 0 && centerPointY == 0 || extendToEdge == false)
+            if((_centerPointX == halfLengthX && _centerPointY == halfLengthY) || clampToEdge == false)
             {
-                _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.All, _divisions));
+                _quadrantData.Add(new RadialQuadrantData(0, 0, LengthX, LengthY, ratioX, ratioY, CartesianQuadrant.I | CartesianQuadrant.II | CartesianQuadrant.III | CartesianQuadrant.IV, divisions));
             }
-            else if(centerPointX == 0 && centerPointY != 0)
+            else if(_centerPointX == halfLengthX && _centerPointY != halfLengthY)
             {
-                var clampedDivisionsY = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in _divisions)
+                if(_centerPointY > halfLengthY)
                 {
-                    clampedDivisionsY.Add(new RadialGradientDivision()
+                    var clampedDivisionsY = new List<RadialGradientDivision>();
+                    float percentToUse = (LengthY - _centerPointY) / (float) halfLengthY;
+                    foreach (RadialGradientDivision division in divisions)
                     {
-                        Value = division.Value,
-                        Point =
-                            new Vector2(division.Point.x,
-                                division.Point.y * ((float) Mathf.Abs(radiusY - centerPointY) / radiusY))
-                    });
+                        clampedDivisionsY.Add(new RadialGradientDivision()
+                        {
+                            Value = division.Value,
+                            Point = new Vector2(division.Point.x, division.Point.y * percentToUse)
+                        });
+                    }
+                    _quadrantData.Add(new RadialQuadrantData(0, _centerPointY, LengthX, LengthY - _centerPointY, ratioX / percentToUse, ratioY, CartesianQuadrant.I | CartesianQuadrant.II, clampedDivisionsY));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, LengthX, _centerPointY, ratioX, ratioY, CartesianQuadrant.III | CartesianQuadrant.IV, divisions));
+                }
+                else // _centerPointY <= halfLengthY
+                {
+                    var clampedDivisionsY = new List<RadialGradientDivision>();
+                    float percentToUse = _centerPointY / (float)halfLengthY;
+                    foreach (RadialGradientDivision division in divisions)
+                    {
+                        clampedDivisionsY.Add(new RadialGradientDivision()
+                        {
+                            Value = division.Value,
+                            Point = new Vector2(division.Point.x, division.Point.y * percentToUse)
+                        });
+                    }
+                    _quadrantData.Add(new RadialQuadrantData(0, _centerPointY, LengthX, LengthY - _centerPointY, ratioX, ratioY, CartesianQuadrant.I | CartesianQuadrant.II, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, LengthX, _centerPointY, ratioX / percentToUse, ratioY, CartesianQuadrant.III | CartesianQuadrant.IV, clampedDivisionsY));
+                }
+            }
+            else if(_centerPointX != halfLengthX && _centerPointY == halfLengthY)
+            {
+                if(_centerPointX > halfLengthX)
+                {
+                    var clampedDivisionsX = new List<RadialGradientDivision>();
+                    float percentToUse = (LengthX - _centerPointX) / (float)halfLengthX;
+                    foreach (RadialGradientDivision division in divisions)
+                    {
+                        clampedDivisionsX.Add(new RadialGradientDivision()
+                        {
+                            Value = division.Value,
+                            Point = new Vector2(division.Point.x * percentToUse, division.Point.y)
+                        });
+                    }
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, 0, LengthX - _centerPointX, LengthY, ratioX, ratioY / percentToUse, CartesianQuadrant.I | CartesianQuadrant.IV, clampedDivisionsX));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, _centerPointX, LengthY, ratioX, ratioY, CartesianQuadrant.II | CartesianQuadrant.III, divisions));
+                }
+                else // _centerPointX <= halfLengthX
+                {
+                    var clampedDivisionsX = new List<RadialGradientDivision>();
+                    float percentToUse = _centerPointX / (float)halfLengthX;
+                    foreach (RadialGradientDivision division in divisions)
+                    {
+                        clampedDivisionsX.Add(new RadialGradientDivision()
+                        {
+                            Value = division.Value,
+                            Point = new Vector2(division.Point.x * percentToUse, division.Point.y)
+                        });
+                    }
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, 0, LengthX - _centerPointX, LengthY, ratioX, ratioY, CartesianQuadrant.I | CartesianQuadrant.IV, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, _centerPointX, LengthY, ratioX, ratioY / percentToUse, CartesianQuadrant.II | CartesianQuadrant.III, clampedDivisionsX));
+                }
+            }
+            else // _centerPointX != 0 && _centerPointY != 0
+            {
+                float percentToUseX;
+                float percentToUseY;
+
+                if (_centerPointX > halfLengthX)
+                {
+                    percentToUseX = (LengthX - _centerPointX) / (float) halfLengthX;
+                }
+                else
+                {
+                    percentToUseX = _centerPointX / (float)halfLengthX;
                 }
 
-                if(centerPointY > 0)
+                if (_centerPointY > halfLengthY)
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY - centerPointY, CartesianQuadrant.I | CartesianQuadrant.II, clampedDivisionsY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.III | CartesianQuadrant.IV, _divisions));
+                    percentToUseY = (LengthY - _centerPointY) / (float)halfLengthY;
                 }
-                else // centerPointY < 0
+                else
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.I | CartesianQuadrant.II, _divisions));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY + centerPointY, CartesianQuadrant.III | CartesianQuadrant.IV, clampedDivisionsY));
+                    percentToUseY = _centerPointY / (float)halfLengthY;
                 }
-            }
-            else if(centerPointX != 0 && centerPointY == 0)
-            {
+
                 var clampedDivisionsX = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in _divisions)
+                foreach(RadialGradientDivision division in divisions)
                 {
                     clampedDivisionsX.Add(new RadialGradientDivision()
                     {
                         Value = division.Value,
                         Point =
                             new Vector2(
-                                division.Point.x * ((float) Mathf.Abs(radiusX - centerPointX) / radiusX),
-                                division.Point.y)
-                    });
-                }
-
-                if(centerPointX > 0)
-                {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY, CartesianQuadrant.I | CartesianQuadrant.IV, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.II | CartesianQuadrant.III, _divisions));
-                }
-                else // centerPointX < 0
-                {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY,
-                        CartesianQuadrant.I | CartesianQuadrant.IV, _divisions));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY,
-                        CartesianQuadrant.II | CartesianQuadrant.III, clampedDivisionsX));
-                }
-            }
-            else // centerPointX != 0 && centerPointY != 0
-            {
-                var clampedDivisionsX = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in _divisions)
-                {
-                    clampedDivisionsX.Add(new RadialGradientDivision()
-                    {
-                        Value = division.Value,
-                        Point =
-                            new Vector2(
-                                division.Point.x * ((float) Mathf.Abs(radiusX - centerPointX) / radiusX),
+                                division.Point.x * percentToUseX,
                                 division.Point.y)
                     });
                 }
 
                 var clampedDivisionsY = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in _divisions)
+                foreach(RadialGradientDivision division in divisions)
                 {
                     clampedDivisionsY.Add(new RadialGradientDivision()
                     {
                         Value = division.Value,
                         Point =
-                            new Vector2(division.Point.x,
-                                division.Point.y * ((float) Mathf.Abs(radiusY - centerPointY) / radiusY))
+                            new Vector2(
+                                division.Point.x,
+                                division.Point.y * percentToUseY)
                     });
                 }
 
                 var clampedDivisionsXY = new List<RadialGradientDivision>();
-                foreach(RadialGradientDivision division in _divisions)
+                foreach(RadialGradientDivision division in divisions)
                 {
                     clampedDivisionsXY.Add(new RadialGradientDivision()
                     {
                         Value = division.Value,
                         Point =
                             new Vector2(
-                                division.Point.x * ((float) Mathf.Abs(radiusX - centerPointX) / radiusX),
-                                division.Point.y * ((float) Mathf.Abs(radiusY - centerPointY) / radiusY))
+                                division.Point.x * percentToUseX,
+                                division.Point.y * percentToUseY)
                     });
                 }
 
-                if(centerPointX > 0 && centerPointY > 0)
+                if (_centerPointX > halfLengthX && _centerPointY > halfLengthY)
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY - centerPointY, CartesianQuadrant.I, clampedDivisionsXY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY - centerPointY, CartesianQuadrant.II, clampedDivisionsY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.III, _divisions));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY, CartesianQuadrant.IV, clampedDivisionsX));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, _centerPointY, LengthX - _centerPointX, LengthY - _centerPointY, ratioX / percentToUseY, ratioY / percentToUseX, CartesianQuadrant.I, clampedDivisionsXY));
+                    _quadrantData.Add(new RadialQuadrantData(0, _centerPointY, _centerPointX, LengthY - _centerPointY, ratioX / percentToUseY, ratioY, CartesianQuadrant.II, clampedDivisionsY));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, _centerPointX, _centerPointY, ratioX, ratioY, CartesianQuadrant.III, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, 0, LengthX - _centerPointX, _centerPointY, ratioX, ratioY / percentToUseX, CartesianQuadrant.IV, clampedDivisionsX));
                 }
-                else if(centerPointX > 0 && centerPointY < 0)
+                else if (_centerPointX > halfLengthX && _centerPointY < halfLengthY)
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY, CartesianQuadrant.I, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.II, _divisions));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY + centerPointY, CartesianQuadrant.III, clampedDivisionsY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX - centerPointX, radiusY + centerPointY, CartesianQuadrant.IV, clampedDivisionsXY));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, _centerPointY, LengthX - _centerPointX, LengthY - _centerPointY, ratioX, ratioY / percentToUseX, CartesianQuadrant.I, clampedDivisionsX));
+                    _quadrantData.Add(new RadialQuadrantData(0, _centerPointY, _centerPointX, LengthY - _centerPointY, ratioX, ratioY, CartesianQuadrant.II, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, _centerPointX, _centerPointY, ratioX / percentToUseY, ratioY, CartesianQuadrant.III, clampedDivisionsY));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, 0, LengthX - _centerPointX, _centerPointY, ratioX / percentToUseY, ratioY / percentToUseX, CartesianQuadrant.IV, clampedDivisionsXY));
                 }
-                else if(centerPointX < 0 && centerPointY > 0)
+                else if (_centerPointX < halfLengthX && _centerPointY > halfLengthY)
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY - centerPointY, CartesianQuadrant.I, clampedDivisionsY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY - centerPointY, CartesianQuadrant.II, clampedDivisionsXY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY, CartesianQuadrant.III, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.IV, _divisions));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, _centerPointY, LengthX - _centerPointX, LengthY - _centerPointY, ratioX / percentToUseY, ratioY, CartesianQuadrant.I, clampedDivisionsY));
+                    _quadrantData.Add(new RadialQuadrantData(0, _centerPointY, _centerPointX, LengthY - _centerPointY, ratioX / percentToUseY, ratioY / percentToUseX, CartesianQuadrant.II, clampedDivisionsXY));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, _centerPointX, _centerPointY, ratioX, ratioY / percentToUseX, CartesianQuadrant.III, clampedDivisionsX));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, 0, LengthX - _centerPointX, _centerPointY, ratioX, ratioY, CartesianQuadrant.IV, divisions));
                 }
-                else //centerPointX < 0 && centerPointY < 0
+                else //_centerPointX < halfLengthX && _centerPointY < halfLengthY
                 {
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY, CartesianQuadrant.I, _divisions));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY, CartesianQuadrant.II, clampedDivisionsX));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX + centerPointX, radiusY + centerPointY, CartesianQuadrant.III, clampedDivisionsXY));
-                    _quadrantData.Add(new RadialQuadrantData(radiusX, radiusY + centerPointY, CartesianQuadrant.IV, clampedDivisionsY));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, _centerPointY, LengthX - _centerPointX, LengthY - _centerPointY, ratioX, ratioY, CartesianQuadrant.I, divisions));
+                    _quadrantData.Add(new RadialQuadrantData(0, _centerPointY, _centerPointX, LengthY - _centerPointY, ratioX, ratioY / percentToUseX, CartesianQuadrant.II, clampedDivisionsX));
+                    _quadrantData.Add(new RadialQuadrantData(0, 0, _centerPointX, _centerPointY, ratioX / percentToUseY, ratioY / percentToUseX, CartesianQuadrant.III, clampedDivisionsXY));
+                    _quadrantData.Add(new RadialQuadrantData(_centerPointX, 0, LengthX - _centerPointX, _centerPointY, ratioX / percentToUseY, ratioY, CartesianQuadrant.IV, clampedDivisionsY));
                 }
             }
         }
 
-        public override float[,] Generate(int startX, int startY, int lengthX, int lengthY)
+        public override float Generate(int x, int y)
         {
-            var values = new float[lengthX, lengthY];
+            RadialQuadrantData quadrantData =  (RadialQuadrantData)_quadrantData.First(item => item.Bounds.Contains(new Vector2(x, y)));
 
-            // Initialize values
-            for(int x = 0; x < lengthX; x++)
-            {
-                for(int y = 0; y < lengthY; y++)
-                {
-                    if((startX + x) == _centerPointX && (startY + y) == _centerPointY)
-                    {
-                        values[x, y] = _divisions[0].Value;
-                    }
-                    else
-                    {
-                        values[x, y] = _divisions[_divisions.Count - 1].Value;
-                    }
-                }
-            }
+            // Find the angle between 0 degree point and current point
+            var pointA = new Vector2(_centerPointX - x, _centerPointY - y);
+            var pointC = new Vector2(0f, 0f);
+            var pointB = new Vector2(_centerPointX - x, 0f);
 
-            // Generate gradient values
-            foreach(QuadrantData quadrantData in _quadrantData)
-            {
-                float startRadiusX, startRadiusY;
-                float incrementRadiusX, incrementRadiusY;
-                if(quadrantData.LengthX >= quadrantData.LengthY)
-                {
-                    startRadiusX = quadrantData.LengthXf / quadrantData.LengthYf;
-                    incrementRadiusX = startRadiusX;
-                    startRadiusY = 1f;
-                    incrementRadiusY = 1f;
-                }
-                else //_radiusX < _radiusY
-                {
-                    startRadiusX = 1f;
-                    incrementRadiusX = 1f;
-                    startRadiusY = quadrantData.LengthYf / quadrantData.LengthXf;
-                    incrementRadiusY = startRadiusY;
-                }
+            float a = Mathf.Sqrt(Mathf.Pow(pointB.x - pointC.x, 2f) + Mathf.Pow(pointB.y - pointC.y, 2f));
+            float b = Mathf.Sqrt(Mathf.Pow(pointA.x - pointC.x, 2f) + Mathf.Pow(pointA.y - pointC.y, 2f));
+            float c = Mathf.Sqrt(Mathf.Pow(pointA.x - pointB.x, 2f) + Mathf.Pow(pointA.y - pointB.y, 2f));
 
-                float currentRadiusX = startRadiusX;
-                float currentRadiusY = startRadiusY;
-                while(currentRadiusX < quadrantData.LengthXf && currentRadiusY < quadrantData.LengthYf)
-                {
-                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, _divisions[_divisions.Count - 1].Value, values);
+            float angle = Mathf.Acos((Mathf.Pow(a, 2f) + Mathf.Pow(b, 2f) - Mathf.Pow(c, 2f)) / (2f * a * b));
 
-                    currentRadiusX += incrementRadiusX;
-                    currentRadiusY += incrementRadiusY;
-                }
-            }
+            // Calculate radius to get the x axis length and the y-axis length
+            float radius = Mathf.Sqrt(Mathf.Pow(_centerPointX - x, 2) / Mathf.Pow(quadrantData.RatioX, 2) + Mathf.Pow(_centerPointY - y, 2) / Mathf.Pow(quadrantData.RatioY, 2));
 
-            return values;
+            // equation for an ellipse = x^2 / (ratioX^2 * r^2) + y^2 / (ratioY^2 * r^2) = 1
+            // x-axis length = Sqrt(ratioX^2 * r^2)
+            // y-axis length = Sqrt(ratioY^2 * r^2)
+            float currentLengthX = Mathf.Sqrt(Mathf.Pow(quadrantData.RatioX, 2) * Mathf.Pow(radius, 2));
+            float currentLengthY = Mathf.Sqrt(Mathf.Pow(quadrantData.RatioY, 2) * Mathf.Pow(radius, 2));
+
+            return quadrantData.CalculateGradientValue(angle, currentLengthX, currentLengthY);
         }
     }
 }

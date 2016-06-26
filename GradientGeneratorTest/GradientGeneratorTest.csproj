@@ -70,72 +70,119 @@
       <Name>GradientGenerator</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="OriginalImages\RadialGradient0_0.png">
+    <Content Include="OriginalImages\RadialGradient128_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RadialGradient0_1.png">
+    <Content Include="OriginalImages\RadialGradient128_192.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RadialGradient1_0.png">
+    <Content Include="OriginalImages\RadialGradient128_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RadialGradient1_1.png">
+    <Content Include="OriginalImages\RadialGradient192_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RadialGradientDivision.png">
+    <Content Include="OriginalImages\RadialGradient192_192.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RadialGradientNoDivision.png">
+    <Content Include="OriginalImages\RadialGradient192_64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradient64_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradient64_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradient64_64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions128_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions128_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions128_64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions192_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions192_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions192_64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions64_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions64_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RadialGradientWithDivisions64_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="OriginalImages\RampGradient.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RampGradient0_0.png">
+    <Content Include="OriginalImages\SpiralGradient128_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RampGradient0_1.png">
+    <Content Include="OriginalImages\SpiralGradient128_192.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RampGradient1_0.png">
+    <Content Include="OriginalImages\SpiralGradient128_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RampGradient1_1.png">
+    <Content Include="OriginalImages\SpiralGradient192_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\SpiralGradient0_0.png">
+    <Content Include="OriginalImages\SpiralGradient192_192.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\SpiralGradient0_1.png">
+    <Content Include="OriginalImages\SpiralGradient192_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\SpiralGradient1_0.png">
+    <Content Include="OriginalImages\SpiralGradient64_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\SpiralGradient1_1.png">
+    <Content Include="OriginalImages\SpiralGradient64_192.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\SpiralGradientDivision.png">
+    <Content Include="OriginalImages\SpiralGradient64_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\SpiralGradientNoDivision.png">
+    <Content Include="OriginalImages\SpiralGradientWithDivisions128_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions128_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions128_64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions192_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions192_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions192_64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions64_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions64_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\SpiralGradientWithDivisions64_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="OriginalImages\SquareGradient.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OriginalImages\SquareGradient0_0.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OriginalImages\SquareGradient0_1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OriginalImages\SquareGradient1_0.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OriginalImages\SquareGradient1_1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

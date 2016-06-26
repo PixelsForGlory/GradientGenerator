@@ -1,5 +1,8 @@
 ﻿// Copyright 2016 afuzzyllama. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Color = System.Drawing.Color;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,6 +12,7 @@ using UnityEngine;
 namespace GradientGeneratorTest
 {
     [TestClass]
+    [SuppressMessage("ReSharper", "RedundantExplicitArrayCreation")]
     public class RadialGradientTest
     {
         [TestMethod]
@@ -17,113 +21,85 @@ namespace GradientGeneratorTest
             const int height = 256;
             const int width = 256;
 
-            var gradient = new RadialGradient(0, 0, width/2, height/2, false);
-            float[,] results = gradient.Generate();
+            var iterationsX = new int[] { 64, 128, 192 };
+            var iterationsY = new int[] { 64, 128, 192 };
 
-            using (var testBitmap = new Bitmap(width, height))
-            using (var originalBitmap = new Bitmap(@".\OriginalImages\RadialGradientNoDivision.png"))
+            foreach (int iterationX in iterationsX)
             {
-                for (int x = 0; x < results.GetLength(0); x++)
+                foreach (int iterationY in iterationsY)
                 {
-                    for (int y = 0; y < results.GetLength(1); y++)
+                    var gradient = new RadialGradient(iterationX, iterationY, 1, 1, width, height, true);
+                    using (var testBitmap = new Bitmap(width, height))
+                    using (var originalBitmap = new Bitmap(String.Format(@".\OriginalImages\RadialGradient{0}_{1}.png", iterationX, iterationY)))
                     {
-                        int result = (byte)(255 * results[x, y]);
-                        var color = Color.FromArgb(255, result, result, result);
-                        testBitmap.SetPixel(x, y, color);
-                    }
-                }
-
-                int differentPixels = 0;
-                for (int x = 0; x < results.GetLength(0); x++)
-                {
-                    for (int y = 0; y < results.GetLength(1); y++)
-                    {
-                        if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
+                        for (int x = 0; x < width; x++)
                         {
-                            differentPixels++;
-                        }
-                    }
-                }
-
-                // Allow for a 0.5% difference
-                Assert.IsTrue(differentPixels < Mathf.RoundToInt((width * height) * 0.005f));
-            }
-
-            gradient = new RadialGradient(0, 0, width / 2, height / 2, true,
-                new List<RadialGradient.RadialGradientDivision>()
-                {
-                    new RadialGradient.RadialGradientDivision { Value = 0f, Point = Vector2.zero },
-                    new RadialGradient.RadialGradientDivision { Value = 0f, Point = new Vector2((float)width / 2 - ((float)width / 2 * 0.75f), (float)height / 2 - ((float)height / 2 * 0.75f)) },
-                    new RadialGradient.RadialGradientDivision { Value = 0.9f, Point = new Vector2((float)width / 2 - ((float)width / 2 * 0.25f), (float)height / 2 - ((float)height / 2 * 0.25f)) },
-                    new RadialGradient.RadialGradientDivision { Value = 1f, Point = new Vector2((float)width / 2, (float)height / 2) }
-                });
-            results = gradient.Generate();
-            using (var testBitmap = new Bitmap(width, height))
-            using (var originalBitmap = new Bitmap(@".\OriginalImages\RadialGradientDivision.png"))
-            {
-                for (int x = 0; x < results.GetLength(0); x++)
-                {
-                    for (int y = 0; y < results.GetLength(1); y++)
-                    {
-                        int result = (byte)(255 * results[x, y]);
-                        var color = Color.FromArgb(255, result, result, result);
-                        testBitmap.SetPixel(x, y, color);
-                    }
-                }
-
-                int differentPixels = 0;
-                for (int x = 0; x < results.GetLength(0); x++)
-                {
-                    for (int y = 0; y < results.GetLength(1); y++)
-                    {
-                        if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
-                        {
-                            differentPixels++;
-                        }
-                    }
-                }
-
-                // Allow for a 0.5% difference
-                Assert.IsTrue(differentPixels < Mathf.RoundToInt((width * height) * 0.005f));
-            }
-        }
-
-
-        [TestMethod]
-        public void GenerateWithBoundsTest()
-        {
-            const int height = 256;
-            const int width = 256;
-            const int divisionsX = 2;
-            const int divisionsY = 2;
-            const int divisionSizeX = width / divisionsX;
-            const int divisionSizeY = height / divisionsY;
-
-            var gradient = new RadialGradient(0, 0, width / 2, height / 2, false);
-
-            for (int divisionX = 0; divisionX < divisionsX; divisionX++)
-            {
-                for (int divisionY = 0; divisionY < divisionsY; divisionY++)
-                {
-                    float[,] results = gradient.Generate(divisionX * divisionSizeX, divisionY * divisionSizeY, divisionSizeX, divisionSizeY);
-
-                    using (var testBitmap = new Bitmap(divisionSizeX, divisionSizeY))
-                    using (var originalBitmap = new Bitmap(string.Format(@".\OriginalImages\RadialGradient{0}_{1}.png", divisionX, divisionY)))
-                    {
-                        for (int x = 0; x < results.GetLength(0); x++)
-                        {
-                            for (int y = 0; y < results.GetLength(1); y++)
+                            for (int y = 0; y < height; y++)
                             {
-                                int result = (byte)(255 * results[x, y]);
+                                int result = (byte)(255 * gradient.Generate(x, y));
                                 var color = Color.FromArgb(255, result, result, result);
                                 testBitmap.SetPixel(x, y, color);
                             }
                         }
 
                         int differentPixels = 0;
-                        for (int x = 0; x < results.GetLength(0); x++)
+                        for (int x = 0; x < width; x++)
                         {
-                            for (int y = 0; y < results.GetLength(1); y++)
+                            for (int y = 0; y < height; y++)
+                            {
+                                if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
+                                {
+                                    differentPixels++;
+                                }
+                            }
+                        }
+
+                        // Allow for a 0.5% difference
+                        Assert.IsTrue(differentPixels < Mathf.RoundToInt((width * height) * 0.005f));
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void GenerateWithDivisionsTest()
+        {
+            const int height = 256;
+            const int width = 256;
+
+            var iterationsX = new int[] { 64, 128, 192 };
+            var iterationsY = new int[] { 64, 128, 192 };
+
+            foreach (int iterationX in iterationsX)
+            {
+                foreach (int iterationY in iterationsY)
+                {
+                    var gradient = new RadialGradient(iterationX, iterationY, 1, 1, width, height, true,
+                        new List<RadialGradient.RadialGradientDivision>()
+                        {
+                            new RadialGradient.RadialGradientDivision { Value = 0f, Point = Vector2.zero },
+                            new RadialGradient.RadialGradientDivision { Value = 0f, Point = new Vector2((float)width / 2 - ((float)width / 2 * 0.75f), (float)height / 2 - ((float)height / 2 * 0.75f)) },
+                            new RadialGradient.RadialGradientDivision { Value = 0.9f, Point = new Vector2((float)width / 2 - ((float)width / 2 * 0.25f), (float)height / 2 - ((float)height / 2 * 0.25f)) },
+                            new RadialGradient.RadialGradientDivision { Value = 1f, Point = new Vector2((float)width / 2, (float)height / 2) }
+                        });
+
+                    using (var testBitmap = new Bitmap(width, height))
+                    using (var originalBitmap = new Bitmap(String.Format(@".\OriginalImages\RadialGradientWithDivisions{0}_{1}.png", iterationX, iterationY)))
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            for (int y = 0; y < height; y++)
+                            {
+                                int result = (byte)(255 * gradient.Generate(x, y));
+                                var color = Color.FromArgb(255, result, result, result);
+                                testBitmap.SetPixel(x, y, color);
+                            }
+                        }
+
+                        int differentPixels = 0;
+                        for (int x = 0; x < width; x++)
+                        {
+                            for (int y = 0; y < height; y++)
                             {
                                 if (testBitmap.GetPixel(x, y) != originalBitmap.GetPixel(x, y))
                                 {
@@ -140,3 +116,5 @@ namespace GradientGeneratorTest
         }
     }
 }
+
+

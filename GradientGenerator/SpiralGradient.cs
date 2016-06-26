@@ -1,5 +1,6 @@
 ﻿// Copyright 2016 afuzzyllama. All Rights Reserved.
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PixelsForGlory.GradientGenerator
@@ -38,11 +39,20 @@ namespace PixelsForGlory.GradientGenerator
             /// <summary>
             /// Spiral quadrant data constructor
             /// </summary>
-            /// <param name="lengthX">Length of the quadrant on the x axis</param>
-            /// <param name="lengthY">Length of the quadrant on the y axis</param>
-            /// <param name="quadrants">What quadrants this instance represents</param>
-            /// <param name="divisions">The division that will make up this gradient</param>
-            public SpiralQuadrantData(int lengthX, int lengthY, CartesianQuadrant quadrants, List<SpiralGradientDivision> divisions) : base(lengthX, lengthY, quadrants)
+            /// <param name="minX">Left most point on a boundary</param>
+            /// <param name="minY">Bottom most point on a bounary</param>
+            /// <param name="lengthX">Length from minX to extend</param>
+            /// <param name="lengthY">Length from minY to extend</param>
+            /// <param name="quadrants">Quadrant or quadrants this instance represents</param>
+            /// <param name="divisions"></param>
+            public SpiralQuadrantData(
+                int minX,
+                int minY,
+                int lengthX,
+                int lengthY,
+                CartesianQuadrant quadrants,
+                IList<SpiralGradientDivision> divisions)
+                : base(minX, minY, lengthX, lengthY, quadrants)
             {
                 _divisions = new List<SpiralGradientDivision>(divisions);
             }
@@ -51,10 +61,10 @@ namespace PixelsForGlory.GradientGenerator
             {
                 // If the angle provided is not a number, assume it is the minimum value for the quadrant.
                 // Otherwise, calculate the value of the angle for the quadrant this instance represents
-                switch(Quadrants)
+                switch (Quadrants)
                 {
                     case CartesianQuadrant.I:
-                        if(float.IsNaN(angle))
+                        if (float.IsNaN(angle))
                         {
                             angle = 0f;
                         }
@@ -64,7 +74,7 @@ namespace PixelsForGlory.GradientGenerator
                         }
                         break;
                     case CartesianQuadrant.II:
-                        if(float.IsNaN(angle))
+                        if (float.IsNaN(angle))
                         {
                             angle = 3f * Mathf.PI;
                         }
@@ -74,7 +84,7 @@ namespace PixelsForGlory.GradientGenerator
                         }
                         break;
                     case CartesianQuadrant.III:
-                        if(float.IsNaN(angle))
+                        if (float.IsNaN(angle))
                         {
                             angle = Mathf.PI;
                         }
@@ -84,9 +94,9 @@ namespace PixelsForGlory.GradientGenerator
                         }
                         break;
                     case CartesianQuadrant.IV:
-                        if(float.IsNaN(angle))
+                        if (float.IsNaN(angle))
                         {
-                            angle = Mathf.PI / 2f;
+                            angle = Mathf.PI;
                         }
                         else
                         {
@@ -101,9 +111,9 @@ namespace PixelsForGlory.GradientGenerator
                 // Find the divisions the supplied angle is between.  
                 // The two divisions will represent the min and max values to lerp between
                 int currentDivisionIndex = 0;
-                while(currentDivisionIndex + 1 < _divisions.Count)
+                while (currentDivisionIndex + 1 < _divisions.Count)
                 {
-                    if(angle >= _divisions[currentDivisionIndex].Point &&
+                    if (angle >= _divisions[currentDivisionIndex].Point &&
                        angle < _divisions[currentDivisionIndex + 1].Point)
                     {
                         break;
@@ -126,108 +136,63 @@ namespace PixelsForGlory.GradientGenerator
         private readonly int _centerPointY;
 
         /// <summary>
-        /// Quadrant data for the gradient
+        /// Cartesian quadrants for the gradient
         /// </summary>
         private readonly List<QuadrantData> _quadrantData;
-
-        private readonly List<SpiralGradientDivision> _divisions;
 
         /// <summary>
         /// Spiral gradient constructor
         /// </summary>
-        /// <param name="centerPointX">Center point of the gradient on the x axis</param>
-        /// <param name="centerPointY">Center point of the gradient on the y axis</param>
-        /// <param name="radiusX">Radius of the gradient on the x axis</param>
-        /// <param name="radiusY">Radius of the gradient on the y axis</param>
-        /// <param name="extendToEdge">Should the gradient generate a circle or push the values all the way to the edge of the generated square</param>
-        /// <param name="divisions">Divisions that represent how this gradient should be generated.  Sorted from smallest point to largest point.</param>
-        public SpiralGradient(int centerPointX, int centerPointY, int radiusX, int radiusY, bool extendToEdge, List<SpiralGradientDivision> divisions = null) 
-            : base(radiusX * 2, radiusY * 2)
+        /// <param name="centerPointX">Center point of the gradient on the x-axis between 0 and LengthX</param>
+        /// <param name="centerPointY">Center point of the gradient on the y-axis between 0 and LegnthY</param>
+        /// <param name="lengthX">Length of gradient on the x-axis</param>
+        /// <param name="lengthY">Length of gradient on the y-axis</param>
+        /// <param name="divisions">Division of the gradient based on radius.  Ordered from 0,0 -> (LengthX/2, LengthY/2)</param>
+        public SpiralGradient(
+            int centerPointX, 
+            int centerPointY, 
+            int lengthX, 
+            int lengthY, 
+            List<SpiralGradientDivision> divisions = null)
+            : base(lengthX, lengthY)
         {
             // If no divisions are supplied, generate basic divisions
-            if(divisions == null)
+            if (divisions == null)
             {
-                _divisions = new List<SpiralGradientDivision>
+                divisions = new List<SpiralGradientDivision>
                 {
                     new SpiralGradientDivision {Value = 0f, Point = 0f},
                     new SpiralGradientDivision {Value = 1f, Point = 2f * Mathf.PI}
                 };
             }
-            else
+
+            _centerPointX = centerPointX;
+            _centerPointY = centerPointY;
+            _quadrantData = new List<QuadrantData>()
             {
-                _divisions = new List<SpiralGradientDivision>(divisions);
-            }
-
-            _centerPointX = centerPointX + radiusX;
-            _centerPointY = centerPointY + radiusY;
-
-            _quadrantData = new List<QuadrantData>();
-
-            int radiusMultiplier = 1;
-            if(extendToEdge)
-            {
-                radiusMultiplier = 2;
-            }
-
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.I, _divisions));
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.II, _divisions));
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.III, _divisions));
-            _quadrantData.Add(new SpiralQuadrantData(radiusX * radiusMultiplier, radiusY * radiusMultiplier, CartesianQuadrant.IV, _divisions));
+                new SpiralQuadrantData(_centerPointX, _centerPointY, LengthX - _centerPointX, LengthY - _centerPointY, CartesianQuadrant.I, divisions),
+                new SpiralQuadrantData(0, _centerPointY, _centerPointX, LengthY - _centerPointY, CartesianQuadrant.II, divisions),
+                new SpiralQuadrantData(0, 0, _centerPointX, _centerPointY, CartesianQuadrant.III, divisions),
+                new SpiralQuadrantData(_centerPointX, 0, LengthX - _centerPointX, _centerPointY, CartesianQuadrant.IV, divisions)
+            };
         }
 
-        public override float[,] Generate(int startX, int startY, int lengthX, int lengthY)
+        public override float Generate(int x, int y)
         {
-            var values = new float[lengthX, lengthY];
+            QuadrantData quadrantData = _quadrantData.First(item => item.Bounds.Contains(new Vector2(x, y)));
 
-            // Initialize values
-            for (int x = 0; x < lengthX; x++)
-            {
-                for(int y = 0; y < lengthY; y++)
-                {
-                    if((startX + x) == _centerPointX && (startY + y) == _centerPointY)
-                    {
-                        values[x, y] = _divisions[0].Value;
-                    }
-                    else
-                    {
-                        values[x, y] = _divisions[_divisions.Count - 1].Value;
-                    }
-                }
-            }
+            // Find the angle between 0 degree point and current point
+            var pointA = new Vector2(_centerPointX - x, _centerPointY - y);
+            var pointC = new Vector2(0f, 0f);
+            var pointB = new Vector2(_centerPointX - x, 0f);
 
-            // Generate gradient values
-            foreach(QuadrantData quadrantData in _quadrantData)
-            {
-                float startRadiusX, startRadiusY;
-                float incrementRadiusX, incrementRadiusY;
-                if(quadrantData.LengthX >= quadrantData.LengthY)
-                {
-                    startRadiusX = quadrantData.LengthXf / quadrantData.LengthYf;
-                    incrementRadiusX = startRadiusX;
-                    startRadiusY = 1f;
-                    incrementRadiusY = 1f;
-                }
-                else //_radiusX < _radiusY
-                {
-                    startRadiusX = 1f;
-                    incrementRadiusX = 1f;
-                    startRadiusY = quadrantData.LengthYf / quadrantData.LengthXf;
-                    incrementRadiusY = startRadiusY;
-                }
+            float a = Mathf.Sqrt(Mathf.Pow(pointB.x - pointC.x, 2f) + Mathf.Pow(pointB.y - pointC.y, 2f));
+            float b = Mathf.Sqrt(Mathf.Pow(pointA.x - pointC.x, 2f) + Mathf.Pow(pointA.y - pointC.y, 2f));
+            float c = Mathf.Sqrt(Mathf.Pow(pointA.x - pointB.x, 2f) + Mathf.Pow(pointA.y - pointB.y, 2f));
 
-                float currentRadiusX = startRadiusX;
-                float currentRadiusY = startRadiusY;
+            float angle = Mathf.Acos((Mathf.Pow(a, 2f) + Mathf.Pow(b, 2f) - Mathf.Pow(c, 2f)) / (2f * a * b));
 
-                while(currentRadiusX < quadrantData.LengthXf && currentRadiusY < quadrantData.LengthYf)
-                {
-                    PlotEllipse(_centerPointX, _centerPointY, Mathf.RoundToInt(currentRadiusX), Mathf.RoundToInt(currentRadiusY), startX, startY, lengthX, lengthY, quadrantData, _divisions[_divisions.Count - 1].Value, values);
-
-                    currentRadiusX += incrementRadiusX;
-                    currentRadiusY += incrementRadiusY;
-                }
-            }
-
-            return values;
+            return quadrantData.CalculateGradientValue(angle, LengthX, LengthY);
         }
     }
 }
