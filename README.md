@@ -16,36 +16,11 @@ If using the Pixels for Glory NuGet repository at http://pixelsforglory.azureweb
 ## Usage
 There are three types of gradients that can be generated:
 
-1. **Square Gradient**
-   
-   **Code:**
-    
-        using PixelsForGlory.GradientGenerator;
-        ...
-       
-        var gradient = new SquareGradient(256, 256);
-        using(var image = new Bitmap(@".\image.png"))
-        {
-            for (int x = 0; x < 256; x++)
-            {
-                for (int y = 0; y < 256; y++)
-                {
-                    int result = (byte)(255 * gradient.Generate(x, y));
-                    var color = Color.FromArgb(255, result, result, result);
-                    image.SetPixel(x, y, color);
-                }
-            }
-        }
-      
-   **Result:**
-      
-      ![Square Gradient](./GradientGeneratorTest/OriginalImages/SquareGradient.png?raw=true "Square Gradient")
-
 1. **Ramp Gradient**
 
    * DivisionsX/Y: The ramp gradient can generate ramps in the X, Y, or X any Y directions.  If one of the divisions is defined, the gradient will ramp in that direction.  If defined in both directions, the result will be the average of the divisions in both directions.  The divisions must be ordered from 0 to LengthX/Y
 
-   a. ** Both X and Y divisions 
+   a. **Both X and Y divisions**
    
    **Code:**
     
@@ -70,7 +45,7 @@ There are three types of gradients that can be generated:
        
       ![Ramp Gradient](./GradientGeneratorTest/OriginalImages/RampGradientXY.png?raw=true "Ramp Gradient X and Y directions")
 
-   b. ** X only divisions 
+   b. **X only divisions**
    
    **Code:**
     
@@ -108,7 +83,7 @@ There are three types of gradients that can be generated:
        
       ![Ramp Gradient](./GradientGeneratorTest/OriginalImages/RampGradientX.png?raw=true "Ramp Gradient X direction")
       
-3. **Spiral Gradient**
+2. **Spiral Gradient**
    
    * divisions: The spiral and be divided into different divisions to create more interesting gradients.  There must be more than 2 divisions in the list and the points must be in ascending order (from 0 to 2 * PI).  The example below shows proper use.
 
