@@ -62,7 +62,6 @@
     <Compile Include="RadialGradientTest.cs" />
     <Compile Include="SpiralGradientTest.cs" />
     <Compile Include="RampGradientTest.cs" />
-    <Compile Include="SquareGradientTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GradientGenerator\GradientGenerator.csproj">
@@ -125,7 +124,13 @@
     <Content Include="OriginalImages\RadialGradientWithDivisions64_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="OriginalImages\RampGradient.png">
+    <Content Include="OriginalImages\RampGradientX.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RampGradientXY.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RampGradientY.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="OriginalImages\SpiralGradient128_128.png">
@@ -180,9 +185,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="OriginalImages\SpiralGradientWithDivisions64_64.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OriginalImages\SquareGradient.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -14,7 +14,7 @@ From a build or downloaded release, copy the `GradientGenerator.dll` to `[PROJEC
 If using the Pixels for Glory NuGet repository at http://pixelsforglory.azurewebsites.net/nuget, install the `PixelsForGlory.GradientGenerator` package into your own class library project or install the `PixelsForGlory.Unity3D.GradientGenerator` package into a Unity3D project.
 
 ## Usage
-There are four types of gradients that can be generated:
+There are three types of gradients that can be generated:
 
 1. **Square Gradient**
    
@@ -41,8 +41,12 @@ There are four types of gradients that can be generated:
       
       ![Square Gradient](./GradientGeneratorTest/OriginalImages/SquareGradient.png?raw=true "Square Gradient")
 
-2. **Ramp Gradient**
+1. **Ramp Gradient**
 
+   * DivisionsX/Y: The ramp gradient can generate ramps in the X, Y, or X any Y directions.  If one of the divisions is defined, the gradient will ramp in that direction.  If defined in both directions, the result will be the average of the divisions in both directions.  The divisions must be ordered from 0 to LengthX/Y
+
+   a. ** Both X and Y divisions 
+   
    **Code:**
     
         using PixelsForGlory.GradientGenerator;
@@ -64,8 +68,46 @@ There are four types of gradients that can be generated:
    
    **Result:**
        
-      ![Ramp Gradient](./GradientGeneratorTest/OriginalImages/RampGradient.png?raw=true "Ramp Gradient")
+      ![Ramp Gradient](./GradientGeneratorTest/OriginalImages/RampGradientXY.png?raw=true "Ramp Gradient X and Y directions")
 
+   b. ** X only divisions 
+   
+   **Code:**
+    
+        using PixelsForGlory.GradientGenerator;
+        ...
+       
+        var gradient = new RampGradient(256, 256,
+            new List<RampGradient.RampGradientDivision>()
+                {
+                    new RampGradient.RampGradientDivision()
+                    {
+                        Point = 0f,
+                        Value = 0f
+                    },
+                    new RampGradient.RampGradientDivision()
+                    {
+                        Point = width,
+                        Value = 1f
+                    }
+                });
+        using(var image = new Bitmap(@".\image.png"))
+        {
+            for (int x = 0; x < 256; x++)
+            {
+                for (int y = 0; y < 256; y++)
+                {
+                    int result = (byte)(255 * gradient.Generate(x, y));
+                    var color = Color.FromArgb(255, result, result, result);
+                    image.SetPixel(x, y, color);
+                }
+            }
+        }
+   
+   **Result:**
+       
+      ![Ramp Gradient](./GradientGeneratorTest/OriginalImages/RampGradientX.png?raw=true "Ramp Gradient X direction")
+      
 3. **Spiral Gradient**
    
    * divisions: The spiral and be divided into different divisions to create more interesting gradients.  There must be more than 2 divisions in the list and the points must be in ascending order (from 0 to 2 * PI).  The example below shows proper use.
@@ -145,7 +187,7 @@ There are four types of gradients that can be generated:
         using PixelsForGlory.GradientGenerator;
         ...
    
-        var gradient = new RadialGradient(128, 128, 256, 256, false);
+        var gradient = new RadialGradient(128, 128, 1, 1, 256, 256, false);
         using(var image = new Bitmap(@".\image.png"))
         {
             for (int x = 0; x < 256; x++)
@@ -170,7 +212,7 @@ There are four types of gradients that can be generated:
         using PixelsForGlory.GradientGenerator;
         ...
    
-        var gradient = new RadialGradient(128, 128, 256, 256, true,
+        var gradient = new RadialGradient(128, 128, 1, 1, 256, 256, true,
            new List<RadialGradient.RadialGradientDivision>()
            {
               new RadialGradient.RadialGradientDivision { Value = 0f, Point = Vector2.zero },

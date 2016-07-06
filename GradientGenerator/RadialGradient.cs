@@ -16,7 +16,7 @@ namespace PixelsForGlory.GradientGenerator
         public struct RadialGradientDivision
         {
             /// <summary>
-            /// Radius of the ellipse to division on (0 to halfLengthX, 0 to radiusY)
+            /// Radius of the ellipse to division on (0 to halfLengthX, 0 to halfLengthY)
             /// </summary>
             public Vector2 Point;
 
@@ -91,7 +91,7 @@ namespace PixelsForGlory.GradientGenerator
                     currentDivisionIndex++;
                 }
 
-                // If the current division + 1 is equal to the amount of dividions, 
+                // If the current division + 1 is equal to the amount of divisions, 
                 // assume the division is for the last segment
                 if((currentDivisionIndex + 1) == _divisions.Count)
                 {
