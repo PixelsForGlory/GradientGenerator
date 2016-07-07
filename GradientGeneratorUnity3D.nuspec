@@ -15,5 +15,6 @@
   <files>
     <file src="GradientGenerator\bin\Release\GradientGenerator.dll" target="content\Assets\Plugins\PixelsForGlory\GradientGenerator" />
     <file src="GradientGenerator\bin\Release\GradientGenerator.pdb" target="content\Assets\Plugins\PixelsForGlory\GradientGenerator" />
+    <file src="NuGetTools\Uninstall.ps1" target="tools\PixelsForGlory\GradientGenerator\" />
   </files>
 </package>
