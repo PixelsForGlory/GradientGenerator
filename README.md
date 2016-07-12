@@ -19,6 +19,8 @@ There are three types of gradients that can be generated:
 1. **Ramp Gradient**
 
    * DivisionsX/Y: The ramp gradient can generate ramps in the X, Y, or X any Y directions.  If one of the divisions is defined, the gradient will ramp in that direction.  If defined in both directions, the result will be the average of the divisions in both directions.  The divisions must be ordered from 0 to LengthX/Y
+   
+   * GenerationCalculationType: The default calculation is to average the two divisions together.  It is also possible to have the calculation take the maximum calculated value or the minimum calculated value from each division.
 
    a. **Both X and Y divisions**
    

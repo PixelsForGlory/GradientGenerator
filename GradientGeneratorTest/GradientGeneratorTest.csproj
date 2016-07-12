@@ -124,6 +124,12 @@
     <Content Include="OriginalImages\RadialGradientWithDivisions64_64.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="OriginalImages\RampGradientMax.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\RampGradientMin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="OriginalImages\RampGradientX.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

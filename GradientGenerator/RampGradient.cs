@@ -1,4 +1,5 @@
 ﻿// Copyright 2016 afuzzyllama. All Rights Reserved.
+using System;
 using System.Collections.Generic;
 
 namespace PixelsForGlory.GradientGenerator
@@ -8,6 +9,16 @@ namespace PixelsForGlory.GradientGenerator
     /// </summary>
     public class RampGradient : Gradient
     {
+        /// <summary>
+        /// Generation calculation type
+        /// </summary>
+        public enum GenerationCalculationType
+        {
+            Average,
+            Min,
+            Max
+        }
+
         /// <summary>
         /// Represents a division of a ramp gradient 
         /// </summary>
@@ -26,12 +37,14 @@ namespace PixelsForGlory.GradientGenerator
 
         private readonly IList<RampGradientDivision> _divisionsX;
         private readonly IList<RampGradientDivision> _divisionsY;
+        private readonly GenerationCalculationType _generationCalculationType;
 
-        public RampGradient(int lengthX, int lengthY, IList<RampGradientDivision> divisionsX = null, IList<RampGradientDivision> divisionsY = null)
+        public RampGradient(int lengthX, int lengthY, IList<RampGradientDivision> divisionsX = null, IList<RampGradientDivision> divisionsY = null, GenerationCalculationType generationCalculationType = GenerationCalculationType.Average)
             : base(lengthX, lengthY)
         {
             _divisionsX = divisionsX == null ? new List<RampGradientDivision>() : new List<RampGradientDivision>(divisionsX);
             _divisionsY = divisionsY == null ? new List<RampGradientDivision>() : new List<RampGradientDivision>(divisionsY);
+            _generationCalculationType = generationCalculationType;
 
             if(_divisionsX.Count == 0 && _divisionsY.Count == 0)
             {
@@ -64,8 +77,7 @@ namespace PixelsForGlory.GradientGenerator
 
         public override float Generate(int x, int y)
         {
-            float numerator = 0f;
-            float denominator = 0f;
+            var values = new List<float>();
 
             // Find the divisions the supplied point is between for both x and y.  
             // The two divisions will represent the min and max values to lerp between
@@ -73,10 +85,9 @@ namespace PixelsForGlory.GradientGenerator
 
             if(_divisionsX.Count != 0)
             {
-                denominator += 1.0f;
                 while((currentDivisionIndex + 1) < _divisionsX.Count)
                 {
-                    if (
+                    if(
                         x >= _divisionsX[currentDivisionIndex].Point
                         && x < _divisionsX[currentDivisionIndex + 1].Point)
                     {
@@ -87,23 +98,22 @@ namespace PixelsForGlory.GradientGenerator
 
                 // If the current division + 1 is equal to the amount of divisions, 
                 // assume the division is for the last segment
-                if ((currentDivisionIndex + 1) == _divisionsX.Count)
+                if((currentDivisionIndex + 1) == _divisionsX.Count)
                 {
                     currentDivisionIndex--;
                 }
 
                 float t = (x - _divisionsX[currentDivisionIndex].Point) / (_divisionsX[currentDivisionIndex + 1].Point - _divisionsX[currentDivisionIndex].Point);
 
-                numerator += Lerp(_divisionsX[currentDivisionIndex].Value, _divisionsX[currentDivisionIndex + 1].Value, t);
+                values.Add(Lerp(_divisionsX[currentDivisionIndex].Value, _divisionsX[currentDivisionIndex + 1].Value, t));
             }
 
             currentDivisionIndex = 0;
-            if (_divisionsY.Count != 0)
+            if(_divisionsY.Count != 0)
             {
-                denominator += 1.0f;
-                while ((currentDivisionIndex + 1) < _divisionsY.Count)
+                while((currentDivisionIndex + 1) < _divisionsY.Count)
                 {
-                    if (
+                    if(
                         y >= _divisionsY[currentDivisionIndex].Point
                         && y < _divisionsY[currentDivisionIndex + 1].Point)
                     {
@@ -114,17 +124,49 @@ namespace PixelsForGlory.GradientGenerator
 
                 // If the current division + 1 is equal to the amount of divisions, 
                 // assume the division is for the last segment
-                if ((currentDivisionIndex + 1) == _divisionsY.Count)
+                if((currentDivisionIndex + 1) == _divisionsY.Count)
                 {
                     currentDivisionIndex--;
                 }
 
                 float t = (y - _divisionsY[currentDivisionIndex].Point) / (_divisionsY[currentDivisionIndex + 1].Point - _divisionsY[currentDivisionIndex].Point);
 
-                numerator += Lerp(_divisionsY[currentDivisionIndex].Value, _divisionsY[currentDivisionIndex + 1].Value, t);
+                values.Add(Lerp(_divisionsY[currentDivisionIndex].Value, _divisionsY[currentDivisionIndex + 1].Value, t));
             }
 
-            return numerator / denominator;
+            float returnValue;
+            switch(_generationCalculationType)
+            {
+                case GenerationCalculationType.Average:
+                    returnValue = 0f;
+                    foreach(float number in values)
+                    {
+                        returnValue += number;
+                    }
+                    return returnValue / values.Count;
+                case GenerationCalculationType.Min:
+                    returnValue = float.MaxValue;
+                    foreach(float number in values)
+                    {
+                        if(returnValue > number)
+                        {
+                            returnValue = number;
+                        }
+                    }
+                    return returnValue;
+                case GenerationCalculationType.Max:
+                    returnValue = float.MinValue;
+                    foreach(float number in values)
+                    {
+                        if(returnValue < number)
+                        {
+                            returnValue = number;
+                        }
+                    }
+                    return returnValue;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
