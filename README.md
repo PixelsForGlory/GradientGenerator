@@ -64,7 +64,7 @@ There are three types of gradients that can be generated:
                     },
                     new RampGradient.RampGradientDivision()
                     {
-                        Point = width,
+                        Point = 256,
                         Value = 1f
                     }
                 });
@@ -84,8 +84,80 @@ There are three types of gradients that can be generated:
    **Result:**
        
       ![Ramp Gradient](./GradientGeneratorTest/OriginalImages/RampGradientX.png?raw=true "Ramp Gradient X direction")
+
+2. **Diagonal Ramp Gradient**
+
+   * DivisionsXY: The diagonal ramp gradient can generate ramps along a line.  The divisions must be ordered from 0,0 to LengthX, LengthY or LengthX, LengthY to 0,0
+   
+   a. **No Divisions**
+   
+   **Code:**
+    
+        using PixelsForGlory.GradientGenerator;
+        ...
+       
+        var gradient = new DiagonalRampGradient(256, 256);
+        using(var image = new Bitmap(@".\image.png"))
+        {
+            for (int x = 0; x < 256; x++)
+            {
+                for (int y = 0; y < 256; y++)
+                {
+                    int result = (byte)(255 * gradient.Generate(x, y));
+                    var color = Color.FromArgb(255, result, result, result);
+                    image.SetPixel(x, y, color);
+                }
+            }
+        }
+   
+   **Result:**
+       
+      ![Diagonal Ramp Gradient](./GradientGeneratorTest/OriginalImages/DiagonalRampGradientXPYP.png?raw=true "Diagonal Ramp Gradient")
+
+   b. **With divisions**
+   
+   **Code:**
+    
+        using PixelsForGlory.GradientGenerator;
+        ...
+       
+        var gradient = new RampGradient(256, 256,
+            new List<RampGradient.RampGradientDivision>()
+                {
+                    new RampGradient.RampGradientDivision()
+                    {
+                        Point = new Vector2(0,0),
+                        Value = 0f
+                    },
+                    new RampGradient.RampGradientDivision()
+                    {
+                        Point = new Vector2(128, 128),
+                        Value = 0f
+                    },
+                    new RampGradient.RampGradientDivision()
+                    {
+                        Point = new Vector(256, 256),
+                        Value = 1f
+                    }
+                });
+        using(var image = new Bitmap(@".\image.png"))
+        {
+            for (int x = 0; x < 256; x++)
+            {
+                for (int y = 0; y < 256; y++)
+                {
+                    int result = (byte)(255 * gradient.Generate(x, y));
+                    var color = Color.FromArgb(255, result, result, result);
+                    image.SetPixel(x, y, color);
+                }
+            }
+        }
+   
+   **Result:**
+       
+      ![Diagonal Ramp Gradient With Divisions](./GradientGeneratorTest/OriginalImages/DiagonalRampGradientDivisions.png?raw=true "Diagonal Ramp Gradient With Divisions")
       
-2. **Spiral Gradient**
+3. **Spiral Gradient**
    
    * divisions: The spiral and be divided into different divisions to create more interesting gradients.  There must be more than 2 divisions in the list and the points must be in ascending order (from 0 to 2 * PI).  The example below shows proper use.
 
@@ -151,7 +223,7 @@ There are three types of gradients that can be generated:
       
       ![Spiral Gradient](./GradientGeneratorTest/OriginalImages/SpiralGradientWithDivisions128_128.png?raw=true "Spiral Gradient")
       
-3. **Radial Gradient**
+4. **Radial Gradient**
    
    There are a couple of options for creating a spiral gradient.  
    * clampToEdge: Instead of extending the gradient outside of the bounds of the image, this option scales the radiuses down to the bounds of the image .

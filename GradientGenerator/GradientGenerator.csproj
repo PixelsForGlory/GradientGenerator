@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiagonalRampGradient.cs" />
     <Compile Include="Gradient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RadialGradient.cs" />

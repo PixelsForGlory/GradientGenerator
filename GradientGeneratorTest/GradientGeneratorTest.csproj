@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RadialGradientTest.cs" />
+    <Compile Include="DiagonalRampGradientTest.cs" />
     <Compile Include="SpiralGradientTest.cs" />
     <Compile Include="RampGradientTest.cs" />
   </ItemGroup>
@@ -70,6 +71,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="OriginalImages\DiagonalRampGradientDivisions.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\DiagonalRampGradientXNYN.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\DiagonalRampGradientXNYP.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\DiagonalRampGradientXPYN.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OriginalImages\DiagonalRampGradientXPYP.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="OriginalImages\RadialGradient128_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
