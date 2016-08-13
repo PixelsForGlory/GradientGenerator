@@ -352,7 +352,12 @@ namespace PixelsForGlory.GradientGenerator
 
         public override float Generate(int x, int y)
         {
-            RadialQuadrantData quadrantData =  (RadialQuadrantData)_quadrantData.First(item => item.Bounds.Contains(new Vector2(x, y)));
+            RadialQuadrantData quadrantData =  (RadialQuadrantData)_quadrantData.FirstOrDefault(item => item.Bounds.Contains(new Vector2(x, y)));
+
+            if(quadrantData == null)
+            {
+                return 0f;
+            }
 
             // Find the angle between 0 degree point and current point
             var pointA = new Vector2(_centerPointX - x, _centerPointY - y);
