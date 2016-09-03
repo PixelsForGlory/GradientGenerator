@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PixelsForGlory</RootNamespace>
-    <AssemblyName>GradientGenerator</AssemblyName>
+    <AssemblyName>PixelsForGlory.GradientGenerator</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

@@ -13,7 +13,7 @@
     <tags>Unity3D Gradient</tags>
   </metadata>
   <files>
-    <file src="GradientGenerator\bin\Release\GradientGenerator.dll" target="lib\net35" />
-    <file src="GradientGenerator\bin\Release\GradientGenerator.pdb" target="lib\net35" />
+    <file src="GradientGenerator\bin\Release\PixelsForGlory.GradientGenerator.dll" target="lib\net35" />
+    <file src="GradientGenerator\bin\Release\PixelsForGlory.GradientGenerator.pdb" target="lib\net35" />
   </files>
 </package>
